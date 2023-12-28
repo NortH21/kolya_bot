@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kolya-bot
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kolya-bot
+  namespace: kolya-bot
+spec:
+  selector:
+    matchLabels:
+      app: kolya_bot
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kolya-bot
+    spec:
+      containers:
+      - name: kolya-bot
+        image: north21/kolya_bot:latest
+        envFrom:
+        - secretRef:
+            name: kolya-bot-telegram-api-token
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.5"
+            memory: "256Mi"
