@@ -25,9 +25,12 @@ spec:
       containers:
       - name: kolya-bot
         image: north21/kolya_bot:latest
-        envFrom:
-        - secretRef:
-            name: kolya-bot-telegram-api-token
+        env:
+          - name: TELEGRAM_APITOKEN
+            valueFrom:
+              secretKeyRef:
+                name: kolya-bot-telegram-api-token
+                key: token
         resources:
           limits:
             cpu: "1"
