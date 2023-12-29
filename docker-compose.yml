@@ -2,10 +2,10 @@ version: '3'
 
 services:
   bot:
-    image: north21/kolya_bot:latest
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    #image: north21/kolya_bot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     platform: linux/amd64
     restart: unless-stopped
     env_file:
