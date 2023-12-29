@@ -13,7 +13,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: kolya_bot
+      app: kolya-bot
   replicas: 1
   strategy:
     type: Recreate
