@@ -4,10 +4,12 @@ import (
 	"os"
 	"log"
 	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var lastReplyTimeMap map[int64]time.Time
 
 func main() {
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
@@ -28,6 +30,8 @@ func main() {
 		log.Panic(err)
 	}
 
+	lastReplyTimeMap = make(map[int64]time.Time)
+
 	for update := range updates {
 		if update.ChannelPost != nil {
 			channelMsg := update.ChannelPost
@@ -39,19 +43,33 @@ func main() {
 			if bot.Debug {
 				log.Printf("Group: [%s] %s", groupMsg.Chat.UserName, groupMsg.Text)
 			}
-			if strings.ToLower(update.Message.Text) == "да" {
-				reply := tgbotapi.NewMessage(update.Message.Chat.ID, "Пизда")
-				_, err := bot.Send(reply)
-				if err != nil {
-					log.Println(err)
-				}
-			} else if strings.ToLower(update.Message.Text) == "нет" {
-				reply := tgbotapi.NewMessage(update.Message.Chat.ID, "Пидора ответ")
-				_, err := bot.Send(reply)
-				if err != nil {
-					log.Println(err)
+
+			chatID := update.Message.Chat.ID
+
+			if shouldSendReply(chatID) {
+				if strings.ToLower(update.Message.Text) == "да" {
+					reply := tgbotapi.NewMessage(chatID, "Пизда")
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+					lastReplyTimeMap[chatID] = time.Now()
+				} else if strings.ToLower(update.Message.Text) == "нет" {
+					reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+					lastReplyTimeMap[chatID] = time.Now()
 				}
 			}
 		}
 	}
 }
+
+func shouldSendReply(chatID int64) bool {
+	currentTime := time.Now()
+	diff := currentTime.Sub(lastReplyTimeMap[chatID])
+	return diff.Minutes() >= 15
+}
+
