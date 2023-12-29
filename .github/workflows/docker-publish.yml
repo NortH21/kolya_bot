@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  IMAGE: north21/kolya_bot
+  
 jobs:
   build:
 
@@ -38,14 +41,17 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t north21/kolya_bot:latest .
+        run: |
+          docker build -t "${IMAGE}:latest" .
+          docker tag "${IMAGE}:latest" "${IMAGE}:$(date +%Y%m%d%H%M%S)"
 
       - name: Test Docker image
-        run: docker run --rm north21/kolya_bot:latest ls -la | grep bot
+        run: docker run --rm "${IMAGE}:latest" ls -la | grep bot
 
       # - name: Run Go tests
-      #   run: docker run --rm north21/kolya_bot:latest go test -vvv
+      #   run: docker run --rm "${IMAGE}:latest" go test -vvv
       
       - name: Push Docker image
-        run: docker push north21/kolya_bot:latest
+        run: |
+          docker push -a "${IMAGE}"
 
