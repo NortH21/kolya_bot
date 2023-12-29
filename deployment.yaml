@@ -19,6 +19,8 @@ spec:
       containers:
       - name: kolya-bot
         image: north21/kolya_bot:latest
+        # image: ubuntu:latest
+        # command: ["/bin/sleep", "3650d"]
         env:
           - name: TELEGRAM_APITOKEN
             valueFrom:
