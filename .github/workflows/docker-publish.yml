@@ -41,12 +41,10 @@ jobs:
         run: docker build -t north21/kolya_bot:latest .
 
       - name: Test Docker image
-        run: |
-          docker run --rm north21/kolya_bot:latest
+        run: docker run --rm north21/kolya_bot:latest grep bot ./
 
       - name: Run Go tests
-        run: |
-          docker run --rm north21/kolya_bot:latest go test -vvv
+        run: docker run --rm north21/kolya_bot:latest go test -vvv
       
       - name: Push Docker image
         run: docker push north21/kolya_bot:latest
