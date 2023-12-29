@@ -11,6 +11,12 @@ import (
 
 var lastReplyTimeMap map[int64]time.Time
 
+func shouldSendReply(chatID int64) bool {
+	currentTime := time.Now()
+	diff := currentTime.Sub(lastReplyTimeMap[chatID])
+	return diff.Minutes() >= 15
+}
+
 func main() {
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
@@ -65,11 +71,5 @@ func main() {
 			}
 		}
 	}
-}
-
-func shouldSendReply(chatID int64) bool {
-	currentTime := time.Now()
-	diff := currentTime.Sub(lastReplyTimeMap[chatID])
-	return diff.Minutes() >= 15
 }
 
