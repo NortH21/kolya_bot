@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t "${IMAGE}:latest" .
-          docker tag "${IMAGE}:latest" "${IMAGE}:$(date +%Y%m%d%H%M%S)"
+          docker tag "${IMAGE}:latest" "${IMAGE}:$(date +%Y%m%d%H%M)"
 
       - name: Test Docker image
         run: docker run --rm "${IMAGE}:latest" ls -la | grep bot
