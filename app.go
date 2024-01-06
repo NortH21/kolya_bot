@@ -4,6 +4,7 @@ import (
 	"os"
 	"log"
 	"strings"
+	"strconv"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -67,6 +68,13 @@ func main() {
 						log.Println(err)
 					}
 					lastReplyTimeMap[chatID] = time.Now()
+				} else if strings.ToLower(update.Message.Text) == "/get_id" {
+					chatIDStr := strconv.FormatInt(chatID, 10)
+					reply := tgbotapi.NewMessage(chatID, chatIDStr)
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}
 		}
