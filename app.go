@@ -109,6 +109,14 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
+					case "/get_id":
+						chatIDStr := strconv.FormatInt(chatID, 10)
+						reply := tgbotapi.NewMessage(chatID, chatIDStr)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
 					}
 				}
 			}
