@@ -23,7 +23,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = false
+	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
