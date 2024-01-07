@@ -10,6 +10,10 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+func init() {
+    os.Setenv("TZ", "Europe/Moscow")
+}
+
 var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
