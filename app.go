@@ -15,8 +15,8 @@ var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
-	updateInterval  	= 1 * time.Hour
-	checkInterval       = 1 * time.Minute
+	updateInterval  	= 2 * time.Hour
+	checkInterval       = 5 * time.Minute
 	reminderInterval    = 24 * time.Hour
 	reminderMessage     = "Ну чо, посоны, вы как? Живы?"
 	reminderChatID      int64 = -1002039497735
@@ -30,15 +30,11 @@ func shouldSendReply(chatID int64) bool {
 
 func shouldSendReminder() bool {
 	currentTime := time.Now()
-	log.Print("shouldSendReminder() currentTime: ", currentTime)
 	if currentTime.Hour() >= 8 && currentTime.Hour() <= 22 {
 		diff := currentTime.Sub(lastUpdateTime)
-		log.Print("shouldSendReminder() diff: ", diff)
 		if diff >= updateInterval {
 			lastCheckTime, ok := lastReminderTimeMap[reminderChatID]
-			log.Print("shouldSendReminder() lastCheckTime: ", lastCheckTime)
 			if !ok || currentTime.Sub(lastCheckTime) >= reminderInterval {
-				log.Print("shouldSendReminder() updateInterval: ", updateInterval)
 				return true
 			}
 		}
@@ -53,7 +49,6 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 		log.Println(err)
 	}
 	lastReminderTimeMap[reminderChatID] = time.Now()
-	log.Print("lastReminderTime: ", time.Now())
 }
 
 func main() {
@@ -89,7 +84,6 @@ func main() {
 	go func() {
 		for update := range updates {
 			lastUpdateTime = time.Now()
-			log.Print(lastUpdateTime)
 			if update.ChannelPost != nil {
 				channelMsg := update.ChannelPost
 				if bot.Debug {
