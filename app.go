@@ -14,7 +14,7 @@ var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
-	lastUpdateInterval  = 1 * time.Hour
+	updateInterval  	= 1 * time.Hour
 	checkInterval       = 1 * time.Minute
 	reminderInterval    = 24 * time.Hour
 	reminderMessage     = "Ну чо, посоны, вы как? Живы?"
@@ -29,11 +29,15 @@ func shouldSendReply(chatID int64) bool {
 
 func shouldSendReminder() bool {
 	currentTime := time.Now()
-	if currentTime.Hour() >= 9 && currentTime.Hour() <= 21 {
-		lastCheckTime, ok := lastReminderTimeMap[reminderChatID]
-		if !ok || currentTime.Sub(lastCheckTime) >= reminderInterval {
-			diff := currentTime.Sub(lastUpdateTime)
-			if diff >= lastUpdateInterval {
+	log.Print("shouldSendReminder() currentTime: ", currentTime)
+	if currentTime.Hour() >= 8 && currentTime.Hour() <= 22 {
+		diff := currentTime.Sub(lastUpdateTime)
+		log.Print("shouldSendReminder() diff: ", diff)
+		if diff >= updateInterval {
+			lastCheckTime, ok := lastReminderTimeMap[reminderChatID]
+			log.Print("shouldSendReminder() lastCheckTime: ", lastCheckTime)
+			if !ok || currentTime.Sub(lastCheckTime) >= reminderInterval {
+				log.Print("shouldSendReminder() updateInterval: ", updateInterval)
 				return true
 			}
 		}
@@ -61,7 +65,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -116,7 +120,6 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
-						lastReplyTimeMap[chatID] = time.Now()
 					}
 				}
 			}
