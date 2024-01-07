@@ -10,10 +10,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func init() {
-    os.Setenv("TZ", "Europe/Moscow")
-}
-
 var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
@@ -60,6 +56,12 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 }
 
 func main() {
+	loc, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		log.Println(err)
+	}
+    time.Local = loc
+
 	lastReplyTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap[reminderChatID] = time.Now()
