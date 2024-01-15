@@ -8,6 +8,7 @@ import (
 	"time"
 	_ "time/tzdata"
 	"math/rand"
+	"bufio"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -53,33 +54,6 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 }
 
 func main() {
-	phrases := []string{
-		"Ах ты хитрая жопа",
-		"Я все вижу",
-		"Не так быстро, ковбой",
-		"Я знаю все твои секреты",
-		"Ты не сможешь уйти от меня",
-		"Ты играешь с огнем",
-		"Не подходи ближе",
-		"Я буду следить за тобой",
-		"Ты думал, что меня обманешь?",
-		"Я знаю, что ты делал прошлым летом",
-		"Ты в самой глубине моих мыслей",
-		"Ничто не останется незамеченным",
-		"Я всегда найду тебя",
-		"Ты попался на мою удочку",
-		"Я тебя предупреждал",
-		"Не играй с огнем, малыш",
-		"Ты в моей паутине",
-		"Я знаю все твои слабости",
-		"Ты не можешь скрыться от меня",
-		"Я буду твоим худшим кошмаром",
-		"Я следую за каждым твоим шагом",
-		"Ты уже попался в сети",
-		"Я знаю, кто ты на самом деле",
-		"Не думай, что уйдешь от меня",
-		"Я тебя найду, где бы ты ни был",
-	}
 	  	  
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
@@ -96,7 +70,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = false
+	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -109,6 +83,32 @@ func main() {
 		log.Panic(err)
 	}
 
+	// Список статей
+	ukrf, err := os.Open("./files/ukrf.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ukrf.Close()
+
+	scannerUkrf := bufio.NewScanner(ukrf)
+	var linesUkrf []string
+	for scannerUkrf.Scan() {
+		linesUkrf = append(linesUkrf, scannerUkrf.Text())
+	}
+
+	// NO!
+	nostr, err := os.Open("./files/no.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer nostr.Close()
+
+	scannerNo := bufio.NewScanner(ukrf)
+	var linesNo []string
+	for scannerNo.Scan() {
+		linesNo = append(linesNo, scannerNo.Text())
+	}
+	
 	// Updates loop
 	go func() {
 		for update := range updates {
@@ -125,30 +125,34 @@ func main() {
 				}
 
 				chatID := update.Message.Chat.ID
+				replyToMessageID := update.Message.MessageID
 
 				if shouldSendReply(chatID) {
 					text := strings.ToLower(update.Message.Text)
+					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 					switch text {
 					case "да":
+						time.Sleep(2 * time.Second)
 						reply := tgbotapi.NewMessage(chatID, "Пизда")
+						reply.ReplyToMessageID = replyToMessageID
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					case "нет":
+						time.Sleep(2 * time.Second)
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
+						reply.ReplyToMessageID = replyToMessageID
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					case "неа", "не-а", "no", "не":
-						 // Инициализируем генератор случайных чисел
-						r := rand.New(rand.NewSource(time.Now().UnixNano()))
-						// Рандомно выбираем строки из списка
-						selectedString := phrases[r.Intn(len(phrases))]
-						reply := tgbotapi.NewMessage(chatID, selectedString)
+						randomNoIndex := rand.Intn(len(linesNo))
+						randomNoLine := linesNo[randomNoIndex]
+						reply := tgbotapi.NewMessage(chatID, randomNoLine)
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
@@ -161,6 +165,15 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
+					case usernameWithAt:
+						randomUkrfIndex := rand.Intn(len(linesUkrf))
+						randomUkrfLine := linesUkrf[randomUkrfIndex]
+						reply := tgbotapi.NewMessage(chatID, randomUkrfLine)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						//lastReplyTimeMap[chatID] = time.Now()
 					}
 				}
 			}
