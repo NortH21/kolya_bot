@@ -103,7 +103,7 @@ func main() {
 	}
 	defer nostr.Close()
 
-	scannerNo := bufio.NewScanner(ukrf)
+	scannerNo := bufio.NewScanner(nostr)
 	var linesNo []string
 	for scannerNo.Scan() {
 		linesNo = append(linesNo, scannerNo.Text())
@@ -130,6 +130,7 @@ func main() {
 				if shouldSendReply(chatID) {
 					text := strings.ToLower(update.Message.Text)
 					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
+					rand.Seed(time.Now().UnixNano())
 					switch text {
 					case "да":
 						time.Sleep(2 * time.Second)
