@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 	_ "time/tzdata"
+	"math/rand"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -52,6 +53,34 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 }
 
 func main() {
+	phrases := []string{
+		"Ах ты хитрая жопа",
+		"Я все вижу",
+		"Не так быстро, ковбой",
+		"Я знаю все твои секреты",
+		"Ты не сможешь уйти от меня",
+		"Ты играешь с огнем",
+		"Не подходи ближе",
+		"Я буду следить за тобой",
+		"Ты думал, что меня обманешь?",
+		"Я знаю, что ты делал прошлым летом",
+		"Ты в самой глубине моих мыслей",
+		"Ничто не останется незамеченным",
+		"Я всегда найду тебя",
+		"Ты попался на мою удочку",
+		"Я тебя предупреждал",
+		"Не играй с огнем, малыш",
+		"Ты в моей паутине",
+		"Я знаю все твои слабости",
+		"Ты не можешь скрыться от меня",
+		"Я буду твоим худшим кошмаром",
+		"Я следую за каждым твоим шагом",
+		"Ты уже попался в сети",
+		"Я знаю, кто ты на самом деле",
+		"Не думай, что уйдешь от меня",
+		"Я тебя найду, где бы ты ни был",
+	}
+	  	  
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		log.Println(err)
@@ -109,6 +138,17 @@ func main() {
 						lastReplyTimeMap[chatID] = time.Now()
 					case "нет":
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					case "неа", "не-а", "no", "не":
+						 // Инициализируем генератор случайных чисел
+						r := rand.New(rand.NewSource(time.Now().UnixNano()))
+						// Рандомно выбираем строки из списка
+						selectedString := phrases[r.Intn(len(phrases))]
+						reply := tgbotapi.NewMessage(chatID, selectedString)
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
