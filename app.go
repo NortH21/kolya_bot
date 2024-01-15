@@ -154,6 +154,7 @@ func main() {
 						randomNoIndex := rand.Intn(len(linesNo))
 						randomNoLine := linesNo[randomNoIndex]
 						reply := tgbotapi.NewMessage(chatID, randomNoLine)
+						reply.ReplyToMessageID = replyToMessageID
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
