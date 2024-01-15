@@ -18,6 +18,6 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app
 
 COPY --from=builder /build/bot .
-COPY ./files .
+COPY ./files ./files/
 
 CMD ["/app/bot"]
