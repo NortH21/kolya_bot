@@ -133,18 +133,18 @@ func main() {
 					rand.Seed(time.Now().UnixNano())
 					switch text {
 					case "да":
-						time.Sleep(2 * time.Second)
 						reply := tgbotapi.NewMessage(chatID, "Пизда")
 						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					case "нет":
-						time.Sleep(2 * time.Second)
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
 						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
@@ -155,6 +155,7 @@ func main() {
 						randomNoLine := linesNo[randomNoIndex]
 						reply := tgbotapi.NewMessage(chatID, randomNoLine)
 						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
