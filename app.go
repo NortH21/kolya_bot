@@ -119,9 +119,8 @@ func main() {
 					log.Printf("Channel: [%s] %s", channelMsg.Chat.UserName, channelMsg.Text)
 				}
 			} else if update.Message != nil {
-				groupMsg := update.Message
 				if bot.Debug {
-					log.Printf("Group: [%s] %s", groupMsg.Chat.UserName, groupMsg.Text)
+					log.Printf("Group: [%s] %s", update.Message.Chat.Title, update.Message.Text)
 				}
 
 				chatID := update.Message.Chat.ID
@@ -130,6 +129,9 @@ func main() {
 				if shouldSendReply(chatID) {
 					text := strings.ToLower(update.Message.Text)
 					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
+					if bot.Debug {
+						log.Print("usernameWithAt: ", usernameWithAt)
+					}
 					rand.Seed(time.Now().UnixNano())
 					switch text {
 					case "да":
@@ -161,6 +163,15 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
+					case "a", "а":
+						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
 					case "/get_id":
 						chatIDStr := strconv.FormatInt(chatID, 10)
 						reply := tgbotapi.NewMessage(chatID, chatIDStr)
@@ -172,11 +183,13 @@ func main() {
 						randomUkrfIndex := rand.Intn(len(linesUkrf))
 						randomUkrfLine := linesUkrf[randomUkrfIndex]
 						reply := tgbotapi.NewMessage(chatID, randomUkrfLine)
+						if bot.Debug {
+							log.Print(chatID, randomUkrfLine)
+						}
 						_, err := bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
-						//lastReplyTimeMap[chatID] = time.Now()
 					}
 				}
 			}
