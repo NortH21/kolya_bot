@@ -18,10 +18,11 @@ var (
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
 	updateInterval  	= 2 * time.Hour
-	checkInterval       = 5 * time.Minute
+	checkInterval       = 1 * time.Minute
 	reminderInterval    = 24 * time.Hour
 	reminderMessage     = "Ну чо, посоны, вы как? Живы?"
 	reminderChatID      int64 = -1002039497735
+	//reminderChatIDTest  int64 = 140450662
 )
 
 func shouldSendReply(chatID int64) bool {
@@ -53,6 +54,40 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 	lastReminderTimeMap[reminderChatID] = time.Now()
 }
 
+func getRandomLineFromFile(filename string) (string, error) {
+	content, err := os.Open(filename)
+	if err != nil {
+	 return "", err
+	}
+	defer content.Close()
+   
+	scanner := bufio.NewScanner(content)
+   
+	var lines []string
+	for scanner.Scan() {
+	 lines = append(lines, scanner.Text())
+	}
+   
+	rand.Seed(time.Now().UnixNano())
+	randomIndex := rand.Intn(len(lines))
+	randomLine := lines[randomIndex]
+   
+	return randomLine, nil
+}
+   
+func sendFridayGreetings(bot *tgbotapi.BotAPI) {
+	fridaystr, err := getRandomLineFromFile("./files/friday.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+   
+	reply := tgbotapi.NewMessage(reminderChatID, fridaystr)
+	_, err = bot.Send(reply)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func main() {
 	  	  
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -81,32 +116,6 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 	if err != nil {
 		log.Panic(err)
-	}
-
-	// Список статей
-	ukrf, err := os.Open("./files/ukrf.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ukrf.Close()
-
-	scannerUkrf := bufio.NewScanner(ukrf)
-	var linesUkrf []string
-	for scannerUkrf.Scan() {
-		linesUkrf = append(linesUkrf, scannerUkrf.Text())
-	}
-
-	// NO!
-	nostr, err := os.Open("./files/no.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer nostr.Close()
-
-	scannerNo := bufio.NewScanner(nostr)
-	var linesNo []string
-	for scannerNo.Scan() {
-		linesNo = append(linesNo, scannerNo.Text())
 	}
 	
 	// Updates loop
@@ -153,12 +162,14 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					case "неа", "не-а", "no", "не":
-						randomNoIndex := rand.Intn(len(linesNo))
-						randomNoLine := linesNo[randomNoIndex]
-						reply := tgbotapi.NewMessage(chatID, randomNoLine)
+						nostr, err := getRandomLineFromFile("./files/no.txt")
+						if err != nil {
+							log.Fatal(err)
+						}
+						reply := tgbotapi.NewMessage(chatID, nostr)
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
+						_, err = bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
@@ -180,13 +191,18 @@ func main() {
 							log.Println(err)
 						}
 					case usernameWithAt:
-						randomUkrfIndex := rand.Intn(len(linesUkrf))
-						randomUkrfLine := linesUkrf[randomUkrfIndex]
-						reply := tgbotapi.NewMessage(chatID, randomUkrfLine)
-						if bot.Debug {
-							log.Print(chatID, randomUkrfLine)
+						// Список статей
+						ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
+						if err != nil {
+							log.Fatal(err)
 						}
-						_, err := bot.Send(reply)
+
+						reply := tgbotapi.NewMessage(chatID, ukrf)
+						if bot.Debug {
+							log.Print(chatID, ukrf)
+						}
+
+						_, err = bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}
@@ -201,6 +217,17 @@ func main() {
 		for {
 			if shouldSendReminder() {
 				sendReminder(bot)
+			}
+			time.Sleep(checkInterval)
+		}
+	}()
+
+	// Friday loop
+	go func() {
+		for {
+			currentTime := time.Now()
+			if currentTime.Weekday() == time.Friday && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
+				sendFridayGreetings(bot)
 			}
 			time.Sleep(checkInterval)
 		}
