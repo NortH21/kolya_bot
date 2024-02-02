@@ -1,15 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"log"
+	"math/rand"
 	"os"
-	"strings"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	_ "time/tzdata"
-	"math/rand"
-	"bufio"
-	"regexp"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,14 +18,14 @@ var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
-	updateInterval  	= 2 * time.Hour
-	checkInterval       = 1 * time.Minute
-	reminderInterval    = 24 * time.Hour
-	reminderMessage     = "Ну чо, посоны, вы как? Живы?"
+	updateInterval            = 2 * time.Hour
+	checkInterval             = 1 * time.Minute
+	reminderInterval          = 24 * time.Hour
+	reminderMessage           = "Ну чо, посоны, вы как? Живы?"
 	reminderChatID      int64 = -1002039497735
 	//reminderChatIDTest	int64 = 140450662
 	//testId			int64 = -1001194083056
-	meetUrl				= ""
+	meetUrl = ""
 )
 
 func shouldSendReply(chatID int64) bool {
@@ -60,30 +60,30 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 func getRandomLineFromFile(filename string) (string, error) {
 	content, err := os.Open(filename)
 	if err != nil {
-	 return "", err
+		return "", err
 	}
 	defer content.Close()
-   
+
 	scanner := bufio.NewScanner(content)
-   
+
 	var lines []string
 	for scanner.Scan() {
-	 lines = append(lines, scanner.Text())
+		lines = append(lines, scanner.Text())
 	}
-   
+
 	rand.Seed(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(lines))
 	randomLine := lines[randomIndex]
-   
+
 	return randomLine, nil
 }
-   
+
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	fridaystr, err := getRandomLineFromFile("./files/friday.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-   
+
 	reply := tgbotapi.NewMessage(reminderChatID, fridaystr)
 	_, err = bot.Send(reply)
 	if err != nil {
@@ -92,17 +92,17 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 }
 
 func main() {
-	  	  
+
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		log.Println(err)
 	}
-    time.Local = loc
+	time.Local = loc
 
 	lastReplyTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap[reminderChatID] = time.Now()
-	
+
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
 		log.Panic(err)
@@ -120,7 +120,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	
+
 	// Updates loop
 	go func() {
 		for update := range updates {
@@ -151,7 +151,7 @@ func main() {
 				patternMeet := "(meet|мит|миит|мост|меет)"
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
-			   			   
+
 				if matchMeet && meetUrl != "" {
 					text := ("Го " + meetUrl)
 					reply := tgbotapi.NewMessage(chatID, text)
@@ -170,7 +170,7 @@ func main() {
 					if bot.Debug {
 						log.Print("usernameWithAt: ", usernameWithAt)
 					}
-					
+
 					rand.Seed(time.Now().UnixNano())
 					switch text {
 					case "да":
