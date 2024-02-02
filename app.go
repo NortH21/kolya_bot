@@ -9,6 +9,7 @@ import (
 	_ "time/tzdata"
 	"math/rand"
 	"bufio"
+	"regexp"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -22,7 +23,9 @@ var (
 	reminderInterval    = 24 * time.Hour
 	reminderMessage     = "Ну чо, посоны, вы как? Живы?"
 	reminderChatID      int64 = -1002039497735
-	//reminderChatIDTest  int64 = 140450662
+	//reminderChatIDTest	int64 = 140450662
+	//testId			int64 = -1001194083056
+	meetUrl				= ""
 )
 
 func shouldSendReply(chatID int64) bool {
@@ -135,12 +138,39 @@ func main() {
 				chatID := update.Message.Chat.ID
 				replyToMessageID := update.Message.MessageID
 
+				text := strings.ToLower(update.Message.Text)
+
+				patternRoomMeet := "(telemost.yandex.ru|meet.google.com)"
+				reRoomMeet := regexp.MustCompile(patternRoomMeet)
+				matchRoomMeet := reRoomMeet.MatchString(text)
+
+				if matchRoomMeet {
+					meetUrl = text
+				}
+
+				patternMeet := "(meet|мит|миит|мост|меет)"
+				reMeet := regexp.MustCompile(patternMeet)
+				matchMeet := reMeet.MatchString(text)
+			   			   
+				if matchMeet && meetUrl != "" {
+					text := ("Го " + meetUrl)
+					reply := tgbotapi.NewMessage(chatID, text)
+					if bot.Debug {
+						log.Print(chatID, text)
+					}
+
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
 				if shouldSendReply(chatID) {
-					text := strings.ToLower(update.Message.Text)
 					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 					if bot.Debug {
 						log.Print("usernameWithAt: ", usernameWithAt)
 					}
+					
 					rand.Seed(time.Now().UnixNano())
 					switch text {
 					case "да":
@@ -196,12 +226,10 @@ func main() {
 						if err != nil {
 							log.Fatal(err)
 						}
-
 						reply := tgbotapi.NewMessage(chatID, ukrf)
 						if bot.Debug {
 							log.Print(chatID, ukrf)
 						}
-
 						_, err = bot.Send(reply)
 						if err != nil {
 							log.Println(err)
