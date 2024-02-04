@@ -21,7 +21,6 @@ var (
 	updateInterval            = 2 * time.Hour
 	checkInterval             = 1 * time.Minute
 	reminderInterval          = 24 * time.Hour
-	reminderMessage           = "Ну чо, посоны, вы как? Живы?"
 	reminderChatID      int64 = -1002039497735
 	//reminderChatIDTest	int64 = 140450662
 	//testId			int64 = -1001194083056
@@ -31,7 +30,7 @@ var (
 func shouldSendReply(chatID int64) bool {
 	currentTime := time.Now()
 	diff := currentTime.Sub(lastReplyTimeMap[chatID])
-	return diff.Minutes() >= 25
+	return diff.Minutes() >= 35
 }
 
 func shouldSendReminder() bool {
@@ -49,8 +48,13 @@ func shouldSendReminder() bool {
 }
 
 func sendReminder(bot *tgbotapi.BotAPI) {
+	reminderMessage, err := getRandomLineFromFile("./files/reminder.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	reply := tgbotapi.NewMessage(reminderChatID, reminderMessage)
-	_, err := bot.Send(reply)
+	_, err = bot.Send(reply)
 	if err != nil {
 		log.Println(err)
 	}

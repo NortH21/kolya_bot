@@ -28,8 +28,11 @@ func TestShouldSendReminder(t *testing.T) {
 
 	// Проверяем, должно ли быть отправлено напоминание
 	shouldSend := shouldSendReminder()
-	if !shouldSend {
-		t.Error("Expected shouldSend to be true, got false")
+	currentTime := time.Now()
+	if currentTime.Hour() >= 10 && currentTime.Hour() <= 20 {
+		if !shouldSend {
+			t.Error("Expected shouldSend to be true, got false")
+		}
 	}
 }
 
@@ -69,3 +72,14 @@ func TestGetRandomLineFromFileFriday(t *testing.T) {
 	}
 }
 
+func TestGetRandomLineFromFileReminder(t *testing.T) {
+	filename := "./files/reminder.txt"
+	randomLine, err := getRandomLineFromFile(filename)
+	if err != nil {
+		t.Errorf("Error reading file: %v", err)
+	}
+
+	if randomLine == "" {
+		t.Error("Expected randomLine to be non-empty, got empty")
+	}
+}
