@@ -152,7 +152,7 @@ func main() {
 					meetUrl = text
 				}
 
-				patternMeet := "(meet|мит|миит|мост|меет)"
+				patternMeet := "(meet|мит|миит|мост|меет|миток)"
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
