@@ -24,7 +24,7 @@ var (
 	reminderChatID      int64 = -1002039497735
 	//reminderChatIDTest	int64 = 140450662
 	//testId			int64 = -1001194083056
-	meetUrl = ""
+	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
 
 func shouldSendReply(chatID int64) bool {
@@ -143,14 +143,6 @@ func main() {
 				replyToMessageID := update.Message.MessageID
 
 				text := strings.ToLower(update.Message.Text)
-
-				patternRoomMeet := "(telemost.yandex.ru|meet.google.com|online.sbis.ru/meet)"
-				reRoomMeet := regexp.MustCompile(patternRoomMeet)
-				matchRoomMeet := reRoomMeet.MatchString(text)
-
-				if matchRoomMeet {
-					meetUrl = text
-				}
 
 				patternMeet := "(meet|мит|миит|мост|меет|миток)"
 				reMeet := regexp.MustCompile(patternMeet)
