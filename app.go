@@ -144,7 +144,7 @@ func main() {
 
 				text := strings.ToLower(update.Message.Text)
 
-				patternRoomMeet := "(telemost.yandex.ru|meet.google.com)"
+				patternRoomMeet := "(telemost.yandex.ru|meet.google.com|online.sbis.ru/meet)"
 				reRoomMeet := regexp.MustCompile(patternRoomMeet)
 				matchRoomMeet := reRoomMeet.MatchString(text)
 
