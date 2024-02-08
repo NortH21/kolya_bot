@@ -144,13 +144,18 @@ func main() {
 
 				text := strings.ToLower(update.Message.Text)
 
-				patternMeet := "(meet|мит|миит|мост|меет|миток)"
+				patternMeet := `(\b|^)(meet|мит|миит|меет|миток)(\b|$)`
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
 				if matchMeet && meetUrl != "" {
 					if update.Message.From.ID == 113501382 {
-						continue
+						reply := tgbotapi.NewMessage(chatID, "Бебебе мемеме")
+
+						_, err = bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
 					} else {
 						text := ("Го, я создал " + meetUrl)
 						reply := tgbotapi.NewMessage(chatID, text)
@@ -167,9 +172,6 @@ func main() {
 
 				if shouldSendReply(chatID) {
 					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
-					// if bot.Debug {
-					// 	log.Print("usernameWithAt: ", usernameWithAt)
-					// }
 
 					rand.Seed(time.Now().UnixNano())
 					switch text {
