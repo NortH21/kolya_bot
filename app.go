@@ -149,23 +149,27 @@ func main() {
 				matchMeet := reMeet.MatchString(text)
 
 				if matchMeet && meetUrl != "" {
-					text := ("Го " + meetUrl)
-					reply := tgbotapi.NewMessage(chatID, text)
-					if bot.Debug {
-						log.Print(chatID, text)
-					}
+					if update.Message.From.ID == 113501382 {
+						continue
+					} else {
+						text := ("Го, я создал " + meetUrl)
+						reply := tgbotapi.NewMessage(chatID, text)
+						if bot.Debug {
+							log.Print(chatID, text)
+						}
 
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
+						_, err = bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
 					}
 				}
 
 				if shouldSendReply(chatID) {
 					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
-					if bot.Debug {
-						log.Print("usernameWithAt: ", usernameWithAt)
-					}
+					// if bot.Debug {
+					// 	log.Print("usernameWithAt: ", usernameWithAt)
+					// }
 
 					rand.Seed(time.Now().UnixNano())
 					switch text {
