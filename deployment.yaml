@@ -25,6 +25,8 @@ spec:
               secretKeyRef:
                 name: kolya-bot-telegram-api-token
                 key: token
+        securityContext:
+          runAsNonRoot: true
         resources:
           limits:
             cpu: "1"
