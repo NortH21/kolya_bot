@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"bufio"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -26,6 +30,58 @@ var (
 	//testId			int64 = -1001194083056
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
+
+
+func getTemperature(city string) (string, error) {
+    type Forecast struct {
+        Forecastday []struct {
+            Day struct {
+                MaxTempC float64 `json:"maxtemp_c"`
+                MinTempC float64 `json:"mintemp_c"`
+                AvgTempC float64 `json:"avgtemp_c"`
+            } `json:"day"`
+        } `json:"forecastday"`
+    }
+	
+	type Current struct {
+		TempC float64 `json:"temp_c"`
+	}
+	
+	type WeatherData struct {
+		Current   Current    `json:"current"`
+        Forecast  Forecast   `json:"forecast"`
+	}
+	
+	url := "https://api.weatherapi.com/v1/forecast.json?q=" + city + "&days=1&key=" + os.Getenv("weatherapi_key")
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var weatherData WeatherData
+	err = json.Unmarshal(body, &weatherData)
+	if err != nil {
+		return "", err
+	}
+
+    maxTemp := weatherData.Forecast.Forecastday[0].Day.MaxTempC
+    minTemp := weatherData.Forecast.Forecastday[0].Day.MinTempC
+    avgTemp := weatherData.Forecast.Forecastday[0].Day.AvgTempC
+	curTemp := weatherData.Current.TempC
+
+	curStr := fmt.Sprintf("Текущая температура %d. Сегодня днем минимальная температура %d, средняя %d, максимальная %d",
+		int(curTemp), int(minTemp), int(avgTemp), int(maxTemp))
+
+	return curStr, nil
+}
+
 
 func shouldSendReply(chatID int64) bool {
 	currentTime := time.Now()
@@ -101,8 +157,19 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		log.Fatal(err)
 	}
 
-	reply := tgbotapi.NewMessage(reminderChatID, morningstr)
-	_, err = bot.Send(reply)
+	morning := tgbotapi.NewMessage(reminderChatID, morningstr)
+	_, err = bot.Send(morning)
+	if err != nil {
+		log.Println(err)
+	}
+
+	temp, err := getTemperature("Yaroslavl")
+	if err != nil {
+		log.Println(err)
+	}
+
+	forecast := tgbotapi.NewMessage(reminderChatID, temp)
+	_, err = bot.Send(forecast)
 	if err != nil {
 		log.Println(err)
 	}
@@ -157,7 +224,7 @@ func main() {
 
 				text := strings.ToLower(update.Message.Text)
 
-				patternMeet := `/meet|мит|миит|меет|миток/i`
+				patternMeet := `/meet|мит|миит|миток/i`
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
@@ -232,6 +299,17 @@ func main() {
 						chatIDStr := strconv.FormatInt(chatID, 10)
 						reply := tgbotapi.NewMessage(chatID, chatIDStr)
 						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+					case "/forecast":
+						temp, err := getTemperature("Yaroslavl")
+						if err != nil {
+							log.Println(err)
+						}
+
+						reply := tgbotapi.NewMessage(chatID, temp)
+						_, err = bot.Send(reply)
 						if err != nil {
 							log.Println(err)
 						}

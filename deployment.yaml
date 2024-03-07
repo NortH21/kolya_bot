@@ -25,6 +25,11 @@ spec:
               secretKeyRef:
                 name: kolya-bot-telegram-api-token
                 key: token
+          - name: weatherapi_key
+            valueFrom:
+              secretKeyRef:
+                name: weatherapi-key
+                key: key
         securityContext:
           runAsNonRoot: true
         resources:
