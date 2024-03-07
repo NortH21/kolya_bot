@@ -95,6 +95,19 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	}
 }
 
+func sendMorningGreetings(bot *tgbotapi.BotAPI) {
+	morningstr, err := getRandomLineFromFile("./files/morning.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reply := tgbotapi.NewMessage(reminderChatID, morningstr)
+	_, err = bot.Send(reply)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func main() {
 
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -252,12 +265,15 @@ func main() {
 		}
 	}()
 
-	// Friday loop
+	// Friday/morning loop
 	go func() {
 		for {
 			currentTime := time.Now()
 			if currentTime.Weekday() == time.Friday && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
 				sendFridayGreetings(bot)
+			}
+			if currentTime.Hour() == 8 && currentTime.Minute() == 0 {
+				sendMorningGreetings(bot)
 			}
 			time.Sleep(checkInterval)
 		}
