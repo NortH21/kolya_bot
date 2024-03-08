@@ -200,13 +200,21 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	tempBak := fmt.Sprintf("На Апшеронском полуострове в городе Бога сегодня тоже прекрасная погода, сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
 		curTempBak, maxTempBak, avgTempBak, minTempBak)
 
-	currencyCode := "USD"
-	rate, err := getExchangeRates(currencyCode)
+	rateUSD, err := getExchangeRates("USD")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	ratesstr := fmt.Sprintf("Курс %s к рублю: %.2f.", currencyCode, rate)
+
+	rateAZN, err := getExchangeRates("AZN")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
+	ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
+	ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
 
 	fullForecast := fmt.Sprintf("%s \n\n%s \n\n%s", tempYar, tempBak, ratesstr)
 	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
@@ -366,14 +374,21 @@ func main() {
 							log.Println(err)
 						}
 					case "/rates":
-						currencyCode := "USD"
-						rate, err := getExchangeRates(currencyCode)
+						rateUSD, err := getExchangeRates("USD")
 						if err != nil {
 							fmt.Println(err)
 							return
 						}
 
-						ratesstr := fmt.Sprintf("Курс %s к рублю: %.2f.", currencyCode, rate)
+						rateAZN, err := getExchangeRates("AZN")
+						if err != nil {
+							fmt.Println(err)
+							return
+						}
+
+						ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
+						ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
+						ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
 						reply := tgbotapi.NewMessage(chatID, ratesstr)
 						_, err = bot.Send(reply)
 						if err != nil {
