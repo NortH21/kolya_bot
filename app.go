@@ -76,8 +76,8 @@ func getTemperature(city string) (string, error) {
     avgTemp := weatherData.Forecast.Forecastday[0].Day.AvgTempC
 	curTemp := weatherData.Current.TempC
 
-	curStr := fmt.Sprintf("Текущая температура %d. Сегодня днем минимальная температура %d, средняя %d, максимальная %d",
-		int(curTemp), int(minTemp), int(avgTemp), int(maxTemp))
+	curStr := fmt.Sprintf("Текущая температура %d. Сегодня днем до %d, в среднем %d, ночью до %d. В Баку прекрасная погода.",
+		int(curTemp), int(maxTemp), int(avgTemp), int(minTemp))
 
 	return curStr, nil
 }

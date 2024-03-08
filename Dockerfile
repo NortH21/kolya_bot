@@ -13,7 +13,7 @@ RUN go build -o bot -ldflags '-linkmode external -w -extldflags "-static"' .
 
 FROM alpine:latest  
 
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates curl
 
 WORKDIR /app
 
