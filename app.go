@@ -162,8 +162,8 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	if err != nil {
 		log.Println(err)
 	}
-	tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Сегодня тепература будет до %d°C, в среднем %d°C и минимально до %d°C.",
-		curTempYar, maxTempYar, avgTempYar, minTempYar)
+	tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+	curTempYar, maxTempYar, avgTempYar, minTempYar)
 
 	curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
 	if err != nil {
@@ -312,7 +312,7 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
-						tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Сегодня тепература будет до %d°C, в среднем %d°C и минимально до %d°C.",
+						tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
 							curTempYar, maxTempYar, avgTempYar, minTempYar)
 
 						curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
