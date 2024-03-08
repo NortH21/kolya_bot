@@ -31,6 +31,34 @@ var (
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
 
+func getExchangeRates(currencyCode string) (float64, error) {
+	resp, err := http.Get("https://www.cbr-xml-daily.ru/daily_json.js")
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return 0, err
+	}
+
+	if valute, ok := data["Valute"].(map[string]interface{}); ok {
+		if currency, ok := valute[currencyCode].(map[string]interface{}); ok {
+			rate := currency["Value"].(float64)
+			return rate, nil
+		} else {
+			return 0, err
+		}
+	}
+	return 0, err
+}
+
 func getTemperature(city string) (int, int, int, int, error) {
 	type Forecast struct {
 		Forecastday []struct {
@@ -162,8 +190,8 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	if err != nil {
 		log.Println(err)
 	}
-	tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
-	curTempYar, maxTempYar, avgTempYar, minTempYar)
+	tempYar := fmt.Sprintf("В одном из старейших русских городов, основанном в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+		curTempYar, maxTempYar, avgTempYar, minTempYar)
 
 	curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
 	if err != nil {
@@ -172,7 +200,15 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	tempBak := fmt.Sprintf("На Апшеронском полуострове в городе Бога сегодня тоже прекрасная погода, сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
 		curTempBak, maxTempBak, avgTempBak, minTempBak)
 
-	fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
+	currencyCode := "USD"
+	rate, err := getExchangeRates(currencyCode)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	ratesstr := fmt.Sprintf("Курс %s к рублю: %.2f.", currencyCode, rate)
+
+	fullForecast := fmt.Sprintf("%s \n\n%s \n\n%s", tempYar, tempBak, ratesstr)
 	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
 	_, err = bot.Send(forecast)
 	if err != nil {
@@ -312,7 +348,7 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
-						tempYar := fmt.Sprintf("В одном из старейших русских городов, основанный в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+						tempYar := fmt.Sprintf("В одном из старейших русских городов, основанном в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
 							curTempYar, maxTempYar, avgTempYar, minTempYar)
 
 						curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
@@ -321,10 +357,24 @@ func main() {
 						}
 						tempBak := fmt.Sprintf("На Апшеронском полуострове в городе Бога сегодня тоже прекрасная погода, сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
 							curTempBak, maxTempBak, avgTempBak, minTempBak)
-					
+
 						fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
 
 						reply := tgbotapi.NewMessage(chatID, fullForecast)
+						_, err = bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+					case "/rates":
+						currencyCode := "USD"
+						rate, err := getExchangeRates(currencyCode)
+						if err != nil {
+							fmt.Println(err)
+							return
+						}
+
+						ratesstr := fmt.Sprintf("Курс %s к рублю: %.2f.", currencyCode, rate)
+						reply := tgbotapi.NewMessage(chatID, ratesstr)
 						_, err = bot.Send(reply)
 						if err != nil {
 							log.Println(err)
