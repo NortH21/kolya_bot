@@ -8,12 +8,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 	_ "time/tzdata"
+	"crypto/md5"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -24,12 +26,76 @@ var (
 	lastUpdateTime      time.Time
 	updateInterval            = 2 * time.Hour
 	checkInterval             = 1 * time.Minute
-	reminderInterval          = 24 * time.Hour
+	reminderInterval          = 14 * time.Hour
 	reminderChatID      int64 = -1002039497735
 	//reminderChatIDTest	int64 = 140450662
 	//testId			int64 = -1001194083056
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
+
+func generateJokesURL(pid, key string) string {
+	uts := strconv.FormatInt(time.Now().Unix(), 10)
+	query := url.Values{}
+	query.Set("pid", pid)
+	query.Set("method", "getRandItem")
+	query.Set("uts", uts)
+
+	hash := md5.Sum([]byte(query.Encode() + key))
+
+	u := url.URL{
+		Scheme:   "http",
+		Host:     "anecdotica.ru",
+		Path:     "/api",
+		RawQuery: query.Encode() + "&hash=" + fmt.Sprintf("%x", hash),
+	}
+
+	return u.String()
+}
+
+func getJokes() (string, error) {
+	type AnecdoteResponse struct {
+		Result struct {
+			Error  int    `json:"error"`
+			ErrMsg string `json:"errMsg"`
+		} `json:"result"`
+		Item struct {
+			Text string `json:"text"`
+			Note string `json:"note"`
+		} `json:"item"`
+	}
+
+	pid := os.Getenv("anecdotica_pid")
+	key := os.Getenv("anecdotica_key")
+
+	url := generateJokesURL(pid, key)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error while sending request:", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
+		return "", err
+	}
+
+	var anecdoteResponse AnecdoteResponse
+	err = json.Unmarshal(body, &anecdoteResponse)
+	if err != nil {
+		fmt.Println("Error parsing JSON:", err)
+		return "", err
+	}
+
+	if anecdoteResponse.Result.Error == 0 {
+		fmt.Println("Anecdote:", anecdoteResponse.Item.Text)
+	} else {
+		fmt.Println("Error:", anecdoteResponse.Result.ErrMsg)
+	}
+	return anecdoteResponse.Item.Text, err
+}
 
 func getExchangeRates(currencyCode string) (float64, error) {
 	resp, err := http.Get("https://www.cbr-xml-daily.ru/daily_json.js")
@@ -137,6 +203,42 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 	if err != nil {
 		log.Println(err)
 	}
+	lastReminderTimeMap[reminderChatID] = time.Now()
+}
+
+func sendJokes(bot *tgbotapi.BotAPI) {
+	text, err := getJokes()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jokes1 := tgbotapi.NewMessage(reminderChatID, "Хотите анекдот?")
+	_, err = bot.Send(jokes1)
+	if err != nil {
+		log.Println(err)
+	}
+	time.Sleep(2 * time.Second)
+
+	jokes2 := tgbotapi.NewMessage(reminderChatID, "А пофиг, слушайте")
+	_, err = bot.Send(jokes2)
+	if err != nil {
+		log.Println(err)
+	}
+	time.Sleep(2 * time.Second)
+
+	jokes := tgbotapi.NewMessage(reminderChatID, text)
+	_, err = bot.Send(jokes)
+	if err != nil {
+		log.Println(err)
+	}
+	time.Sleep(2 * time.Second)
+
+	jokes3 := tgbotapi.NewMessage(reminderChatID, "Ахаха")
+	_, err = bot.Send(jokes3)
+	if err != nil {
+		log.Println(err)
+	}
+
 	lastReminderTimeMap[reminderChatID] = time.Now()
 }
 
@@ -394,6 +496,17 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
+					case "/jokes":
+						text, err := getJokes()
+						if err != nil {
+							log.Fatal(err)
+						}
+						reply := tgbotapi.NewMessage(chatID, text)
+						_, err = bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
 					case usernameWithAt:
 						// Список статей
 						ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
@@ -418,7 +531,13 @@ func main() {
 	go func() {
 		for {
 			if shouldSendReminder() {
-				sendReminder(bot)
+				rand.Seed(time.Now().UnixNano())
+				randomNumber := rand.Intn(2)
+				if randomNumber == 0 {
+					sendJokes(bot)
+				} else {
+					sendReminder(bot)
+				}
 			}
 			time.Sleep(checkInterval)
 		}

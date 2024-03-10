@@ -30,6 +30,16 @@ spec:
               secretKeyRef:
                 name: weatherapi-key
                 key: key
+          - name: anecdotica_pid
+            valueFrom:
+              secretKeyRef:
+                name: anecdotica
+                key: pid
+          - name: anecdotica_key
+            valueFrom:
+              secretKeyRef:
+                name: anecdotica
+                key: key
         securityContext:
           runAsNonRoot: true
         resources:
