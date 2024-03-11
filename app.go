@@ -406,7 +406,7 @@ func main() {
 
 					rand.Seed(time.Now().UnixNano())
 					switch text {
-					case "да":
+					case "да", "да)":
 						reply := tgbotapi.NewMessage(chatID, "Пизда")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -415,7 +415,7 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "нет":
+					case "нет", "нет)":
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -424,7 +424,7 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "неа", "не-а", "no", "не":
+					case "неа", "не-а", "no", "не", "неа)", "не)":
 						nostr, err := getRandomLineFromFile("./files/no.txt")
 						if err != nil {
 							log.Fatal(err)
@@ -437,7 +437,7 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "a", "а":
+					case "a", "а", "a)", "а)":
 						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -458,14 +458,14 @@ func main() {
 						if err != nil {
 							log.Println(err)
 						}
-						tempYar := fmt.Sprintf("В одном из старейших русских городов, основанном в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+						tempYar := fmt.Sprintf("В Ярославле сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
 							curTempYar, maxTempYar, avgTempYar, minTempYar)
 
 						curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
 						if err != nil {
 							log.Println(err)
 						}
-						tempBak := fmt.Sprintf("На Апшеронском полуострове в городе Бога сегодня тоже прекрасная погода, сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
+						tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
 							curTempBak, maxTempBak, avgTempBak, minTempBak)
 
 						fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
