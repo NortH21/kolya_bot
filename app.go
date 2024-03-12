@@ -39,6 +39,8 @@ func generateJokesURL(pid, key string) string {
 	query.Set("pid", pid)
 	query.Set("method", "getRandItem")
 	query.Set("uts", uts)
+	query.Set("category", "4") // 4 – чёрный юмор
+	query.Set("genre", "1") // 1 – анекдоты
 
 	hash := md5.Sum([]byte(query.Encode() + key))
 
