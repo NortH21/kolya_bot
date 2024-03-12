@@ -401,12 +401,13 @@ func main() {
 					}
 				}
 
-				if shouldSendReply(chatID) {
-					usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
+				
+				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 
-					rand.Seed(time.Now().UnixNano())
-					switch text {
-					case "да", "да)":
+				rand.Seed(time.Now().UnixNano())
+				switch text {
+				case "да", "да)":
+					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Пизда")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -415,7 +416,9 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "нет", "нет)":
+					}
+				case "нет", "нет)":
+					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -424,7 +427,9 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "неа", "не-а", "no", "не", "неа)", "не)":
+					}
+				case "неа", "не-а", "no", "не", "неа)", "не)":
+					if shouldSendReply(chatID) {
 						nostr, err := getRandomLineFromFile("./files/no.txt")
 						if err != nil {
 							log.Fatal(err)
@@ -437,7 +442,9 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "a", "а", "a)", "а)":
+					}
+				case "a", "а", "a)", "а)":
+					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
@@ -446,81 +453,80 @@ func main() {
 							log.Println(err)
 						}
 						lastReplyTimeMap[chatID] = time.Now()
-					case "/get_id":
-						chatIDStr := strconv.FormatInt(chatID, 10)
-						reply := tgbotapi.NewMessage(chatID, chatIDStr)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					case "/forecast":
-						curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
-						if err != nil {
-							log.Println(err)
-						}
-						tempYar := fmt.Sprintf("В Ярославле сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
-							curTempYar, maxTempYar, avgTempYar, minTempYar)
+					}
+				case "/get_id":
+					chatIDStr := strconv.FormatInt(chatID, 10)
+					reply := tgbotapi.NewMessage(chatID, chatIDStr)
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				case "/forecast":
+					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
+					if err != nil {
+						log.Println(err)
+					}
+					tempYar := fmt.Sprintf("В Ярославле сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+						curTempYar, maxTempYar, avgTempYar, minTempYar)
 
-						curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
-						if err != nil {
-							log.Println(err)
-						}
-						tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
-							curTempBak, maxTempBak, avgTempBak, minTempBak)
+					curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
+					if err != nil {
+						log.Println(err)
+					}
+					tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
+						curTempBak, maxTempBak, avgTempBak, minTempBak)
 
-						fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
+					fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
 
-						reply := tgbotapi.NewMessage(chatID, fullForecast)
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					case "/rates":
-						rateUSD, err := getExchangeRates("USD")
-						if err != nil {
-							fmt.Println(err)
-							return
-						}
+					reply := tgbotapi.NewMessage(chatID, fullForecast)
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				case "/rates":
+					rateUSD, err := getExchangeRates("USD")
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
 
-						rateAZN, err := getExchangeRates("AZN")
-						if err != nil {
-							fmt.Println(err)
-							return
-						}
+					rateAZN, err := getExchangeRates("AZN")
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
 
-						ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
-						ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-						ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
-						reply := tgbotapi.NewMessage(chatID, ratesstr)
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					case "/jokes":
-						text, err := getJokes()
-						if err != nil {
-							log.Fatal(err)
-						}
-						reply := tgbotapi.NewMessage(chatID, text)
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					case usernameWithAt:
-						// Список статей
-						ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
-						if err != nil {
-							log.Fatal(err)
-						}
-						reply := tgbotapi.NewMessage(chatID, ukrf)
-						if bot.Debug {
-							log.Print(chatID, ukrf)
-						}
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
+					ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
+					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
+					ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+					reply := tgbotapi.NewMessage(chatID, ratesstr)
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				case "/jokes":
+					text, err := getJokes()
+					if err != nil {
+						log.Fatal(err)
+					}
+					reply := tgbotapi.NewMessage(chatID, text)
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				case usernameWithAt:
+					// Список статей
+					ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
+					if err != nil {
+						log.Fatal(err)
+					}
+					reply := tgbotapi.NewMessage(chatID, ukrf)
+					if bot.Debug {
+						log.Print(chatID, ukrf)
+					}
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
 					}
 				}
 			}
