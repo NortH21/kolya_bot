@@ -380,24 +380,15 @@ func main() {
 				matchMeet := reMeet.MatchString(text)
 
 				if matchMeet && meetUrl != "" {
-					if update.Message.From.ID == 113501382 {
-						reply := tgbotapi.NewMessage(chatID, "Бебебе мемеме")
+					text := ("Го, я создал " + meetUrl)
+					reply := tgbotapi.NewMessage(chatID, text)
+					if bot.Debug {
+						log.Print(chatID, text)
+					}
 
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					} else {
-						text := ("Го, я создал " + meetUrl)
-						reply := tgbotapi.NewMessage(chatID, text)
-						if bot.Debug {
-							log.Print(chatID, text)
-						}
-
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
 					}
 				}
 
