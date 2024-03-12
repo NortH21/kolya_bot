@@ -445,14 +445,14 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "/get_id":
+				case "/get_id", "/get_id"+usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					reply := tgbotapi.NewMessage(chatID, chatIDStr)
 					_, err := bot.Send(reply)
 					if err != nil {
 						log.Println(err)
 					}
-				case "/forecast":
+				case "/forecast", "/forecast"+usernameWithAt:
 					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
 					if err != nil {
 						log.Println(err)
@@ -474,7 +474,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/rates":
+				case "/rates", "/rates"+usernameWithAt:
 					rateUSD, err := getExchangeRates("USD")
 					if err != nil {
 						fmt.Println(err)
@@ -495,7 +495,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/jokes":
+				case "/jokes", "/jokes"+usernameWithAt:
 					text, err := getJokes()
 					if err != nil {
 						log.Fatal(err)
