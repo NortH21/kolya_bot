@@ -171,7 +171,11 @@ func getTemperature(city string) (int, int, int, int, error) {
 	avgTemp := weatherData.Forecast.Forecastday[0].Day.AvgTempC
 	curTemp := weatherData.Current.TempC
 
-	return int(curTemp), int(minTemp), int(avgTemp), int(maxTemp), err
+	if city == "Yaroslavl" {
+		return int(curTemp) + 2, int(minTemp) + 2, int(avgTemp) + 2, int(maxTemp) + 3, err // ну бля
+	} else {
+		return int(curTemp), int(minTemp), int(avgTemp), int(maxTemp), err
+	}
 }
 
 func shouldSendReply(chatID int64) bool {
