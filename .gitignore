@@ -1,5 +1,6 @@
 .env
 secret.yaml
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

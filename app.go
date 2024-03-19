@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,7 +16,6 @@ import (
 	"strings"
 	"time"
 	_ "time/tzdata"
-	"crypto/md5"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -40,7 +40,7 @@ func generateJokesURL(pid, key string) string {
 	query.Set("method", "getRandItem")
 	query.Set("uts", uts)
 	query.Set("category", "4") // 4 – чёрный юмор
-	query.Set("genre", "1") // 1 – анекдоты
+	query.Set("genre", "1")    // 1 – анекдоты
 
 	hash := md5.Sum([]byte(query.Encode() + key))
 
@@ -394,7 +394,6 @@ func main() {
 					}
 				}
 
-				
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 
 				rand.Seed(time.Now().UnixNano())
@@ -447,14 +446,25 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "/get_id", "/get_id"+usernameWithAt:
+				case "300", "триста", "тристо", "три сотни":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Отсоси у тракториста)))")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
+				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					reply := tgbotapi.NewMessage(chatID, chatIDStr)
 					_, err := bot.Send(reply)
 					if err != nil {
 						log.Println(err)
 					}
-				case "/forecast", "/forecast"+usernameWithAt:
+				case "/forecast", "/forecast" + usernameWithAt:
 					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
 					if err != nil {
 						log.Println(err)
@@ -476,7 +486,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/rates", "/rates"+usernameWithAt:
+				case "/rates", "/rates" + usernameWithAt:
 					rateUSD, err := getExchangeRates("USD")
 					if err != nil {
 						fmt.Println(err)
@@ -497,7 +507,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/jokes", "/jokes"+usernameWithAt:
+				case "/jokes", "/jokes" + usernameWithAt:
 					text, err := getJokes()
 					if err != nil {
 						log.Fatal(err)
@@ -559,4 +569,3 @@ func main() {
 	// Keep main goroutine alive
 	select {}
 }
-
