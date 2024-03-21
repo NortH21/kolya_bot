@@ -461,6 +461,17 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
+				case "как сам", "как сам?":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Как сало килограмм")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					reply := tgbotapi.NewMessage(chatID, chatIDStr)
