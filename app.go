@@ -33,6 +33,19 @@ var (
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
 
+func isLastDayOfMonth(date time.Time) bool {
+	nextDay := date.AddDate(0, 0, 1)
+	return nextDay.Month() != date.Month()
+}
+
+func sendLastDayOfMonth(bot *tgbotapi.BotAPI) {
+	reply := tgbotapi.NewMessage(reminderChatID, "📅 Сегодня последний день месяца! Напоминаю, что нужно заплатить за интернет.")
+	_, err := bot.Send(reply)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func generateJokesURL(pid, key string) string {
 	uts := strconv.FormatInt(time.Now().Unix(), 10)
 	query := url.Values{}
@@ -576,6 +589,17 @@ func main() {
 			}
 			if currentTime.Hour() == 8 && currentTime.Minute() == 0 {
 				sendMorningGreetings(bot)
+			}
+			time.Sleep(checkInterval)
+		}
+	}()
+
+	// Last day loop
+	go func() {
+		for {
+			currentTime := time.Now()
+			if isLastDayOfMonth(currentTime) && currentTime.Hour() == 12 && currentTime.Minute() == 0 {
+				sendLastDayOfMonth(bot)
 			}
 			time.Sleep(checkInterval)
 		}

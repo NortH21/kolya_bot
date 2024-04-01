@@ -125,6 +125,25 @@ func TestGenerateJokesURL(t *testing.T) {
 	}
 }
 
+func TestIsLastDayOfMonth(t *testing.T) {
+	tests := []struct {
+		date       time.Time
+		isLastDay  bool
+	}{
+		{time.Date(2024, time.April, 30, 0, 0, 0, 0, time.UTC), true},
+		{time.Date(2024, time.April, 15, 0, 0, 0, 0, time.UTC), false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.date.String(), func(t *testing.T) {
+			if got := isLastDayOfMonth(tt.date); got != tt.isLastDay {
+				t.Errorf("isLastDayOfMonth(%v) = %v, want %v", tt.date, got, tt.isLastDay)
+			}
+		})
+	}
+}
+
+
 // func TestGetJokes(t *testing.T) {
 // 	pid := "1234"
 // 	key := "testkey"
