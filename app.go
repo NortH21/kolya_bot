@@ -606,7 +606,8 @@ func main() {
 			if currentTime.Weekday() == time.Friday && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
 				sendFridayGreetings(bot)
 			}
-			if currentTime.Hour() == 8 && currentTime.Minute() == 0 {
+			if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
+				(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
 				sendMorningGreetings(bot)
 			}
 			time.Sleep(checkInterval)
