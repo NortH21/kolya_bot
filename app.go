@@ -28,6 +28,8 @@ var (
 	checkInterval             = 1 * time.Minute
 	reminderInterval          = 14 * time.Hour
 	reminderChatID      int64 = -1002039497735
+	rChatID 			int64 = 113501382
+	rInterval   			  = 1 * time.Hour
 	//reminderChatIDTest	int64 = 140450662
 	//testId			int64 = -1001194083056
 	meetUrl = "https://jitsi.sipleg.ru/spd"
@@ -260,6 +262,23 @@ func sendJokes(bot *tgbotapi.BotAPI) {
 
 	lastReminderTimeMap[reminderChatID] = time.Now()
 }
+
+
+func sendR(bot *tgbotapi.BotAPI) {
+	text, err := getJokes()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jokes := tgbotapi.NewMessage(rChatID, text)
+	_, err = bot.Send(jokes)
+	if err != nil {
+		log.Println(err)
+	}
+
+	lastReminderTimeMap[rChatID] = time.Now()
+}
+
 
 func getRandomLineFromFile(filename string) (string, error) {
 	content, err := os.Open(filename)
@@ -600,6 +619,22 @@ func main() {
 			currentTime := time.Now()
 			if isLastDayOfMonth(currentTime) && currentTime.Hour() == 12 && currentTime.Minute() == 0 {
 				sendLastDayOfMonth(bot)
+			}
+			time.Sleep(checkInterval)
+		}
+	}()
+
+	// R send jokes loop
+	go func() {
+		for {
+			currentTime := time.Now()
+			dayOfWeek := currentTime.Weekday()
+			hour := currentTime.Hour()
+			if dayOfWeek >= time.Monday && dayOfWeek <= time.Friday && hour >= 8 && hour < 18 {
+				lastCheckTime := lastReminderTimeMap[rChatID]
+				if currentTime.Sub(lastCheckTime) >= rInterval {
+					sendR(bot)
+				}
 			}
 			time.Sleep(checkInterval)
 		}
