@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kolya-bot
-        image: north21/kolya_bot:202404101933 # change for automatic deployment!
+        image: north21/kolya_bot:202404102001 # change for automatic deployment!
         env:
           - name: TELEGRAM_APITOKEN
             valueFrom:
