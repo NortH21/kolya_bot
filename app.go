@@ -504,6 +504,39 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
+				case "хуй на":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "А тебе два)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
+				case "нет, тебе", "нет тебе":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Нет, тебе!)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
+				case "нет, ты", "нет ты":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Нет, ты!)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					reply := tgbotapi.NewMessage(chatID, chatIDStr)
