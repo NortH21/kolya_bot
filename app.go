@@ -417,7 +417,7 @@ func main() {
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
-				if matchMeet && meetUrl != "" {
+				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
 					reply := tgbotapi.NewMessage(chatID, text)
 					if bot.Debug {
