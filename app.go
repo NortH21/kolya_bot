@@ -413,7 +413,7 @@ func main() {
 
 				text := strings.ToLower(update.Message.Text)
 
-				patternMeet := `(?i)\b(meet|мит|миит|миток)\b`
+				patternMeet := `(?i)(?:^|\s)(meet|мит|миит|миток)(?:$|\s)`
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
