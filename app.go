@@ -94,7 +94,7 @@ func getJokes() (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		fmt.Printf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -111,7 +111,7 @@ func getJokes() (string, error) {
 	}
 
 	if anecdoteResponse.Result.Error != 0 {
-		return "", fmt.Errorf("API error: %s", anecdoteResponse.Result.ErrMsg)
+		fmt.Printf("API error: %s", anecdoteResponse.Result.ErrMsg)
 	}
 
 	return anecdoteResponse.Item.Text, nil
