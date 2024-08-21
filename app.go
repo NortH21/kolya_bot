@@ -93,6 +93,10 @@ func getJokes() (string, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
@@ -106,12 +110,11 @@ func getJokes() (string, error) {
 		return "", err
 	}
 
-	if anecdoteResponse.Result.Error == 0 {
-		fmt.Println("Anecdote:", anecdoteResponse.Item.Text)
-	} else {
-		fmt.Println("Error:", anecdoteResponse.Result.ErrMsg)
+	if anecdoteResponse.Result.Error != 0 {
+		return "", fmt.Errorf("API error: %s", anecdoteResponse.Result.ErrMsg)
 	}
-	return anecdoteResponse.Item.Text, err
+
+	return anecdoteResponse.Item.Text, nil
 }
 
 func getExchangeRates(currencyCode string) (float64, error) {
