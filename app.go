@@ -278,6 +278,11 @@ func sendR(bot *tgbotapi.BotAPI) {
 		log.Fatal(err)
 	}
 
+	if text == "" {
+		log.Println("Получен пустой текст шутки, выполнение прекращено.")
+		return
+	}
+
 	jokes := tgbotapi.NewMessage(rChatID, text)
 	_, err = bot.Send(jokes)
 	if err != nil {
@@ -599,6 +604,10 @@ func main() {
 					text, err := getJokes()
 					if err != nil {
 						log.Fatal(err)
+					}
+					if text == "" {
+						log.Println("Получен пустой текст шутки, выполнение прекращено.")
+						return
 					}
 					reply := tgbotapi.NewMessage(chatID, text)
 					_, err = bot.Send(reply)
