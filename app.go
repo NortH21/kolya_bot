@@ -243,6 +243,11 @@ func sendJokes(bot *tgbotapi.BotAPI) {
 	}
 	time.Sleep(2 * time.Second)
 
+	if text == "" {
+		log.Println("Получен пустой текст шутки, выполнение прекращено.")
+		return
+	}
+
 	jokes2 := tgbotapi.NewMessage(reminderChatID, "А пофиг, слушайте")
 	_, err = bot.Send(jokes2)
 	if err != nil {
