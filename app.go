@@ -469,7 +469,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "неа", "не-а", "no", "не", "неа)", "не)":
+				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
 					if shouldSendReply(chatID) {
 						nostr, err := getRandomLineFromFile("./files/no.txt")
 						if err != nil {
@@ -487,6 +487,17 @@ func main() {
 				case "a", "а", "a)", "а)":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
+				case "естественно", "естественно)":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Хуестественно)")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
 						_, err := bot.Send(reply)
