@@ -458,6 +458,17 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
+				case "мда", "мда)":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Манда")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
 				case "нет", "нет)":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
@@ -498,6 +509,17 @@ func main() {
 				case "естественно", "естественно)":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуестественно)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
+				case "конечно", "конечно)", "конечно!":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Хуечно")
 						reply.ReplyToMessageID = replyToMessageID
 						time.Sleep(2 * time.Second)
 						_, err := bot.Send(reply)
