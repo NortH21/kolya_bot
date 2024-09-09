@@ -35,6 +35,10 @@ var (
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
 
+var replyCountMap = make(map[int64]int)
+const maxReplies = 3
+const replyInterval = 35 * time.Minute
+
 func isLastDayOfMonth(date time.Time) bool {
 	nextDay := date.AddDate(0, 0, 1)
 	return nextDay.Month() != date.Month()
@@ -198,9 +202,21 @@ func getTemperature(city string) (int, int, int, int, error) {
 
 func shouldSendReply(chatID int64) bool {
 	currentTime := time.Now()
-	diff := currentTime.Sub(lastReplyTimeMap[chatID])
-	return diff.Minutes() >= 35
+	lastReplyTime, exists := lastReplyTimeMap[chatID]
+	replyCount, countExists := replyCountMap[chatID]
+
+	if !exists || currentTime.Sub(lastReplyTime) >= replyInterval {
+		lastReplyTimeMap[chatID] = currentTime
+		replyCountMap[chatID] = 1
+		return true
+	} else if countExists && replyCount < maxReplies {
+		replyCountMap[chatID]++
+		return true
+	}
+
+	return false
 }
+
 
 func shouldSendReminder() bool {
 	currentTime := time.Now()
