@@ -13,16 +13,41 @@ import (
 )
 
 func TestShouldSendReply(t *testing.T) {
-	lastReplyTimeMap := make(map[int64]time.Time)
+	// Сбрасываем состояние перед тестом
+	lastReplyTimeMap = make(map[int64]time.Time)
+	replyCountMap = make(map[int64]int)
 
-	// Устанавливаем последнее время ответа для определенного chatID
+	// Устанавливаем chatID для теста
 	chatID := int64(123456789)
-	lastReplyTimeMap[chatID] = time.Now().Add(-30 * time.Minute)
+
+	// Устанавливаем текущее время
+	currentTime := time.Now()
+
+	// Устанавливаем последнее время ответа для chatID на 36 минут назад
+	lastReplyTimeMap[chatID] = currentTime.Add(-36 * time.Minute)
 
 	// Проверяем, должен ли быть отправлен ответ для данного chatID
 	shouldSend := shouldSendReply(chatID)
 	if !shouldSend {
 		t.Error("Expected shouldSend to be true, got false")
+	}
+
+	// Устанавливаем последнее время ответа на текущее время
+	lastReplyTimeMap[chatID] = currentTime
+
+	// Проверяем, что ответ не должен быть отправлен снова в течение 10 минут
+	for i := 0; i < 2; i++ {
+		shouldSend = shouldSendReply(chatID)
+		if !shouldSend {
+			t.Error("Expected shouldSend to be true, got false")
+		}
+	}
+
+	// Проверяем, что ответ не должен быть отправлен снова после 3 ответов
+	replyCountMap[chatID] = maxReplies
+	shouldSend = shouldSendReply(chatID)
+	if shouldSend {
+		t.Error("Expected shouldSend to be false after max replies, got true")
 	}
 }
 
