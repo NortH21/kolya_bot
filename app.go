@@ -588,6 +588,17 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
+				case "ну вот":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Хуй тебе в рот)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
 				case "нет, тебе", "нет тебе":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Нет, тебе!)")
