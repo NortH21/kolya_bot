@@ -463,7 +463,7 @@ func main() {
 
 				rand.Seed(time.Now().UnixNano())
 				switch text {
-				case "да", "да)":
+				case "да", "да)", "да!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Пизда")
 						reply.ReplyToMessageID = replyToMessageID
@@ -474,7 +474,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "мда", "мда)":
+				case "мда", "мда)", "мда!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Манда")
 						reply.ReplyToMessageID = replyToMessageID
@@ -485,7 +485,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "нет", "нет)":
+				case "нет", "нет)", "нет!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
 						reply.ReplyToMessageID = replyToMessageID
@@ -511,7 +511,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "a", "а", "a)", "а)":
+				case "a", "а", "a)", "а)", "а!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
 						reply.ReplyToMessageID = replyToMessageID
@@ -522,7 +522,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "естественно", "естественно)":
+				case "естественно", "естественно)", "естественно!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуестественно)")
 						reply.ReplyToMessageID = replyToMessageID
@@ -566,7 +566,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "именно", "именно)":
+				case "именно", "именно)", "именно!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуименно")
 						reply.ReplyToMessageID = replyToMessageID
@@ -599,7 +599,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "нет, тебе", "нет тебе":
+				case "нет, тебе", "нет тебе", "нет, тебе!", "нет тебе!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Нет, тебе!)")
 						reply.ReplyToMessageID = replyToMessageID
@@ -610,7 +610,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "нет, ты", "нет ты":
+				case "нет, ты", "нет ты", "нет, ты!", "нет ты!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Нет, ты!)")
 						reply.ReplyToMessageID = replyToMessageID
