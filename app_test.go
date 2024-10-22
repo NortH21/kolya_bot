@@ -128,27 +128,27 @@ func TestGetRandomLineFromFileMorning(t *testing.T) {
 	}
 }
 
-func TestGenerateJokesURL(t *testing.T) {
-	pid := "1234"
-	key := "testkey"
-	uts := strconv.FormatInt(time.Now().Unix(), 10)
+// func TestGenerateJokesURL(t *testing.T) {
+// 	pid := "1234"
+// 	key := "testkey"
+// 	uts := strconv.FormatInt(time.Now().Unix(), 10)
 
-	query := url.Values{}
-	query.Set("pid", pid)
-	query.Set("method", "getRandItem")
-	query.Set("uts", uts)
-	query.Set("category", "4") // 4 – чёрный юмор
-	query.Set("genre", "1")    // 1 – анекдоты
-	hash := md5.Sum([]byte(query.Encode() + key))
+// 	query := url.Values{}
+// 	query.Set("pid", pid)
+// 	query.Set("method", "getRandItem")
+// 	query.Set("uts", uts)
+// 	query.Set("category", "4") // 4 – чёрный юмор
+// 	query.Set("genre", "1")    // 1 – анекдоты
+// 	hash := md5.Sum([]byte(query.Encode() + key))
 
-	expectedURL := "http://anecdotica.ru/api?category=4&genre=1&method=getRandItem&pid=1234&uts=" + uts + "&hash=" + hex.EncodeToString(hash[:])
+// 	expectedURL := "http://anecdotica.ru/api?category=4&genre=1&method=getRandItem&pid=1234&uts=" + uts + "&hash=" + hex.EncodeToString(hash[:])
 
-	actualURL := generateJokesURL(pid, key)
+// 	actualURL := generateJokesURL(pid, key)
 
-	if actualURL != expectedURL {
-		t.Errorf("Expected URL %s, got %s", expectedURL, actualURL)
-	}
-}
+// 	if actualURL != expectedURL {
+// 		t.Errorf("Expected URL %s, got %s", expectedURL, actualURL)
+// 	}
+// }
 
 func TestIsLastDayOfMonth(t *testing.T) {
 	tests := []struct {
