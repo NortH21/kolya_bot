@@ -1,13 +1,13 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	// "crypto/md5"
+	// "encoding/hex"
 	// "encoding/json"
 	// "io/ioutil"
 	// "net/http"
-	"net/url"
-	"strconv"
+	// "net/url"
+	// "strconv"
 	"testing"
 	"time"
 )
