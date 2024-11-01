@@ -332,20 +332,33 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	fridaystr, err := getRandomLineFromFile("./files/friday.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	today := time.Now()
-	// isTodayOff := isdayoff.IsDayOff(today)
-	tomorrow := today.AddDate(0, 0, 1)
-	isTomorrowOff := isdayoff.IsDayOff(tomorrow)
+	dayOff := isdayoff.New()
+	countryCode := isdayoff.CountryCode("RU")
+	pre := false
+	covid := false
 
-	if isTomorrowOff {
-		reply := tgbotapi.NewMessage(reminderChatID, fridaystr)
-		_, err = bot.Send(reply)
+	// Проверяем, является ли завтра выходным
+	tomorrow, err := dayOff.Tomorrow(isdayoff.Params{
+		CountryCode: &countryCode,
+		Pre:         &pre,
+		Covid:       &covid,
+	})
+	if err != nil {
+		fmt.Println("Ошибка при проверке завтрашнего дня:", err)
+		return
+	}
+
+	// Если завтра выходной, отправляем приветствие
+	if *tomorrow == isdayoff.DayTypeNonWorking {
+		fridayStr, err := getRandomLineFromFile("./files/friday.txt")
 		if err != nil {
-			log.Println(err)
+			fmt.Println("Ошибка при получении строки из файла:", err)
+			return // Возвращаемся, чтобы избежать дальнейших действий при ошибке
+		}
+
+		reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
+		if _, err := bot.Send(reply); err != nil {
+			fmt.Println("Ошибка при отправке сообщения:", err)
 		}
 	}
 }

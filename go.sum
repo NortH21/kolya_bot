@@ -1,2 +1,4 @@
+github.com/anatoliyfedorenko/isdayoff v1.0.2 h1:eDPM77cx96oziR97Sj0o+neuTUZRyD8HViB7QAqghv4=
+github.com/anatoliyfedorenko/isdayoff v1.0.2/go.mod h1:ZNmFWl1WXAg7qGqtVgUzy8ZhEQ1ESjkpX/ElWmoAILM=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.2-0.20221020003057-99503a71186f h1:s4aF4gKdCrJGRBWW8mUHIzjQ3PClFfZYA7gfH++aJ+E=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.2-0.20221020003057-99503a71186f/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
