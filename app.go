@@ -18,6 +18,7 @@ import (
 	_ "time/tzdata"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/anatoliyfedorenko/isdayoff"
 )
 
 var (
@@ -335,11 +336,17 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	today := time.Now()
+	// isTodayOff := isdayoff.IsDayOff(today)
+	tomorrow := today.AddDate(0, 0, 1)
+	isTomorrowOff := isdayoff.IsDayOff(tomorrow)
 
-	reply := tgbotapi.NewMessage(reminderChatID, fridaystr)
-	_, err = bot.Send(reply)
-	if err != nil {
-		log.Println(err)
+	if isTomorrowOff {
+		reply := tgbotapi.NewMessage(reminderChatID, fridaystr)
+		_, err = bot.Send(reply)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
