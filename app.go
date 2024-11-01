@@ -332,34 +332,15 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	dayOff := isdayoff.New()
-	countryCode := isdayoff.CountryCode("RU")
-	pre := false
-	covid := false
-
-	// Проверяем, является ли завтра выходным
-	tomorrow, err := dayOff.Tomorrow(isdayoff.Params{
-		CountryCode: &countryCode,
-		Pre:         &pre,
-		Covid:       &covid,
-	})
+	fridayStr, err := getRandomLineFromFile("./files/friday.txt")
 	if err != nil {
-		fmt.Println("Ошибка при проверке завтрашнего дня:", err)
-		return
+		fmt.Println("Ошибка при получении строки из файла:", err)
+		return // Возвращаемся, чтобы избежать дальнейших действий при ошибке
 	}
 
-	// Если завтра выходной, отправляем приветствие
-	if *tomorrow == isdayoff.DayTypeNonWorking {
-		fridayStr, err := getRandomLineFromFile("./files/friday.txt")
-		if err != nil {
-			fmt.Println("Ошибка при получении строки из файла:", err)
-			return // Возвращаемся, чтобы избежать дальнейших действий при ошибке
-		}
-
-		reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
-		if _, err := bot.Send(reply); err != nil {
-			fmt.Println("Ошибка при отправке сообщения:", err)
-		}
+	reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
+	if _, err := bot.Send(reply); err != nil {
+		fmt.Println("Ошибка при отправке сообщения:", err)
 	}
 }
 
@@ -743,8 +724,25 @@ func main() {
 	// Friday/morning loop
 	go func() {
 		for {
+			dayOff := isdayoff.New()
+			countryCode := isdayoff.CountryCode("RU")
+			pre := false
+			covid := false
+		
+			// Проверяем, является ли завтра выходным
+			tomorrow, err := dayOff.Tomorrow(isdayoff.Params{
+				CountryCode: &countryCode,
+				Pre:         &pre,
+				Covid:       &covid,
+			})
+			if err != nil {
+				fmt.Println("Ошибка при проверке завтрашнего дня:", err)
+				return
+			}
+		
+			// Если завтра выходной, отправляем приветствие
 			currentTime := time.Now()
-			if currentTime.Weekday() == time.Friday && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
+			if *tomorrow == isdayoff.DayTypeNonWorking && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
 				sendFridayGreetings(bot)
 			}
 			if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
