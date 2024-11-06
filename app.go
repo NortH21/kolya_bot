@@ -734,7 +734,6 @@ func main() {
 				Pre:         &pre,
 				Covid:       &covid,
 			})
-			fmt.Println(tomorrow)
 			if err != nil {
 				fmt.Println("Ошибка при проверке завтрашнего дня:", err)
 				return
