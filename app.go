@@ -29,8 +29,6 @@ var (
 	checkInterval             = 1 * time.Minute
 	reminderInterval          = 14 * time.Hour
 	reminderChatID      int64 = -1002039497735
-	// rChatID 			int64 = 113501382
-	// rInterval   			  = 1 * time.Hour
 	// reminderChatID	int64 = 140450662
 	// testId			int64 = -1001194083056
 	meetUrl = "https://jitsi.sipleg.ru/spd"
@@ -246,69 +244,6 @@ func sendReminder(bot *tgbotapi.BotAPI) {
 	}
 	lastReminderTimeMap[reminderChatID] = time.Now()
 }
-
-// func sendJokes(bot *tgbotapi.BotAPI) {
-// 	text, err := getJokes()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	jokes1 := tgbotapi.NewMessage(reminderChatID, "Хотите анекдот?")
-// 	_, err = bot.Send(jokes1)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	time.Sleep(2 * time.Second)
-
-// 	if text == "" {
-// 		log.Println("Получен пустой текст шутки, выполнение прекращено.")
-// 		return
-// 	}
-
-// 	jokes2 := tgbotapi.NewMessage(reminderChatID, "А пофиг, слушайте")
-// 	_, err = bot.Send(jokes2)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	time.Sleep(2 * time.Second)
-
-// 	jokes := tgbotapi.NewMessage(reminderChatID, text)
-// 	_, err = bot.Send(jokes)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	time.Sleep(2 * time.Second)
-
-// 	jokes3 := tgbotapi.NewMessage(reminderChatID, "Ахаха")
-// 	_, err = bot.Send(jokes3)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	lastReminderTimeMap[reminderChatID] = time.Now()
-// }
-
-
-// func sendR(bot *tgbotapi.BotAPI) {
-// 	text, err := getJokes()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	if text == "" {
-// 		log.Println("Получен пустой текст шутки, выполнение прекращено.")
-// 		return
-// 	}
-
-// 	jokes := tgbotapi.NewMessage(rChatID, text)
-// 	_, err = bot.Send(jokes)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	lastReminderTimeMap[rChatID] = time.Now()
-// }
-
 
 func getRandomLineFromFile(filename string) (string, error) {
 	content, err := os.Open(filename)
@@ -709,13 +644,7 @@ func main() {
 	go func() {
 		for {
 			if shouldSendReminder() {
-				// rand.Seed(time.Now().UnixNano())
-				// randomNumber := rand.Intn(2)
-				// if randomNumber == 0 {
-				// 	sendJokes(bot)
-				// } else {
 				sendReminder(bot)
-				// }
 			}
 			time.Sleep(checkInterval)
 		}
@@ -762,22 +691,6 @@ func main() {
 			time.Sleep(checkInterval)
 		}
 	}()
-
-	// R send jokes loop
-	// go func() {
-	// 	for {
-	// 		currentTime := time.Now()
-	// 		dayOfWeek := currentTime.Weekday()
-	// 		hour := currentTime.Hour()
-	// 		if dayOfWeek >= time.Monday && dayOfWeek <= time.Friday && hour >= 8 && hour < 18 {
-	// 			lastCheckTime := lastReminderTimeMap[rChatID]
-	// 			if currentTime.Sub(lastCheckTime) >= rInterval {
-	// 				sendR(bot)
-	// 			}
-	// 		}
-	// 		time.Sleep(checkInterval)
-	// 	}
-	// }()
 
 	// Keep main goroutine alive
 	select {}
