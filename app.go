@@ -91,7 +91,7 @@ func getJokes() (string, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("Error while sending request:", err)
+		log.Println("Error while sending request:", err)
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -102,14 +102,14 @@ func getJokes() (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		log.Println("Error reading response body:", err)
 		return "", err
 	}
 
 	var anecdoteResponse AnecdoteResponse
 	err = json.Unmarshal(body, &anecdoteResponse)
 	if err != nil {
-		fmt.Println("Error parsing JSON:", err)
+		log.Println("Error parsing JSON:", err)
 		return "", err
 	}
 
@@ -269,13 +269,13 @@ func getRandomLineFromFile(filename string) (string, error) {
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	fridayStr, err := getRandomLineFromFile("./files/friday.txt")
 	if err != nil {
-		fmt.Println("Ошибка при получении строки из файла:", err)
+		log.Println("Ошибка при получении строки из файла:", err)
 		return // Возвращаемся, чтобы избежать дальнейших действий при ошибке
 	}
 
 	reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
 	if _, err := bot.Send(reply); err != nil {
-		fmt.Println("Ошибка при отправке сообщения:", err)
+		log.Println("Ошибка при отправке сообщения:", err)
 	}
 }
 
@@ -307,13 +307,13 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 
 	rateUSD, err := getExchangeRates("USD")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	rateAZN, err := getExchangeRates("AZN")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
