@@ -23,3 +23,4 @@ COPY ./files ./files/
 USER 9000:9000
 
 CMD ["/app/bot"]
+
