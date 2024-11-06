@@ -3,7 +3,7 @@ name: Build, Test, and Push Docker Image
 on:
   push:
     branches:
-      - main
+      - '**'  # Срабатывает на пуши в любые ветки
     paths:
       - '*.go'
       - 'Dockerfile'
@@ -56,15 +56,22 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
+        id: build
         run: |
-          docker build -t "${IMAGE}:latest" .
-          docker tag "${IMAGE}:latest" "${IMAGE}:$(date +%Y%m%d%H%M)"
+          TIMESTAMP=$(date +%Y%m%d%H%M)
+          echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker build -t "${IMAGE}:latest" .
+          fi
+          docker build -t "${IMAGE}:${TIMESTAMP}" .
 
       - name: Test Docker image
         run: |
-          docker run --rm "${IMAGE}:latest" ls -la | grep bot
+          docker run --rm "${IMAGE}:${{ env.TIMESTAMP }}" ls -la | grep bot
 
       - name: Push Docker image
         run: |
-          docker push "${IMAGE}:latest"
-          docker push "${IMAGE}:$(date +%Y%m%d%H%M)"
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker push "${IMAGE}:latest"
+          fi
+          docker push "${IMAGE}:${{ env.TIMESTAMP }}"
