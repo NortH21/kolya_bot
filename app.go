@@ -28,10 +28,10 @@ var (
 	updateInterval            = 2 * time.Hour
 	checkInterval             = 1 * time.Minute
 	reminderInterval          = 14 * time.Hour
-	// reminderChatID      int64 = -1002039497735
+	reminderChatID      int64 = -1002039497735
 	// rChatID 			int64 = 113501382
 	// rInterval   			  = 1 * time.Hour
-	reminderChatID	int64 = 140450662
+	// reminderChatID	int64 = 140450662
 	// testId			int64 = -1001194083056
 	meetUrl = "https://jitsi.sipleg.ru/spd"
 )
@@ -734,7 +734,6 @@ func main() {
 				Pre:         &pre,
 				Covid:       &covid,
 			})
-			fmt.Println(tomorrow)
 			if err != nil {
 				fmt.Println("Ошибка при проверке завтрашнего дня:", err)
 				return
