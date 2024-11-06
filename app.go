@@ -2,14 +2,9 @@ package main
 
 import (
 	"bufio"
-	"crypto/md5"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/http"
-	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -51,154 +46,6 @@ func sendLastDayOfMonth(bot *tgbotapi.BotAPI) {
 	}
 }
 
-func generateJokesURL(pid, key string) string {
-	uts := strconv.FormatInt(time.Now().Unix(), 10)
-	query := url.Values{}
-	query.Set("pid", pid)
-	query.Set("method", "getRandItem")
-	query.Set("uts", uts)
-	query.Set("category", "4") // 4 – чёрный юмор
-	query.Set("genre", "1")    // 1 – анекдоты
-
-	hash := md5.Sum([]byte(query.Encode() + key))
-
-	u := url.URL{
-		Scheme:   "http",
-		Host:     "anecdotica.ru",
-		Path:     "/api",
-		RawQuery: query.Encode() + "&hash=" + fmt.Sprintf("%x", hash),
-	}
-
-	return u.String()
-}
-
-func getJokes() (string, error) {
-	type AnecdoteResponse struct {
-		Result struct {
-			Error  int    `json:"error"`
-			ErrMsg string `json:"errMsg"`
-		} `json:"result"`
-		Item struct {
-			Text string `json:"text"`
-			Note string `json:"note"`
-		} `json:"item"`
-	}
-
-	pid := os.Getenv("anecdotica_pid")
-	key := os.Getenv("anecdotica_key")
-
-	url := generateJokesURL(pid, key)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Println("Error while sending request:", err)
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("Error reading response body:", err)
-		return "", err
-	}
-
-	var anecdoteResponse AnecdoteResponse
-	err = json.Unmarshal(body, &anecdoteResponse)
-	if err != nil {
-		log.Println("Error parsing JSON:", err)
-		return "", err
-	}
-
-	if anecdoteResponse.Result.Error != 0 {
-		fmt.Printf("API error: %s", anecdoteResponse.Result.ErrMsg)
-	}
-
-	return anecdoteResponse.Item.Text, nil
-}
-
-func getExchangeRates(currencyCode string) (float64, error) {
-	resp, err := http.Get("https://www.cbr-xml-daily.ru/daily_json.js")
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
-	}
-
-	var data map[string]interface{}
-	if err := json.Unmarshal(body, &data); err != nil {
-		return 0, err
-	}
-
-	if valute, ok := data["Valute"].(map[string]interface{}); ok {
-		if currency, ok := valute[currencyCode].(map[string]interface{}); ok {
-			rate := currency["Value"].(float64)
-			return rate, nil
-		} else {
-			return 0, err
-		}
-	}
-	return 0, err
-}
-
-func getTemperature(city string) (int, int, int, int, error) {
-	type Forecast struct {
-		Forecastday []struct {
-			Day struct {
-				MaxTempC float64 `json:"maxtemp_c"`
-				MinTempC float64 `json:"mintemp_c"`
-				AvgTempC float64 `json:"avgtemp_c"`
-			} `json:"day"`
-		} `json:"forecastday"`
-	}
-
-	type Current struct {
-		TempC float64 `json:"temp_c"`
-	}
-
-	type WeatherData struct {
-		Current  Current  `json:"current"`
-		Forecast Forecast `json:"forecast"`
-	}
-
-	url := "https://api.weatherapi.com/v1/forecast.json?q=" + city + "&days=1&key=" + os.Getenv("weatherapi_key")
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return 0, 0, 0, 0, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return 0, 0, 0, 0, err
-	}
-
-	var weatherData WeatherData
-	err = json.Unmarshal(body, &weatherData)
-	if err != nil {
-		return 0, 0, 0, 0, err
-	}
-
-	maxTemp := weatherData.Forecast.Forecastday[0].Day.MaxTempC
-	minTemp := weatherData.Forecast.Forecastday[0].Day.MinTempC
-	avgTemp := weatherData.Forecast.Forecastday[0].Day.AvgTempC
-	curTemp := weatherData.Current.TempC
-
-	if city == "Yaroslavl" {
-		return int(curTemp) + 2, int(minTemp) + 2, int(avgTemp) + 2, int(maxTemp) + 3, err // ну бля
-	} else {
-		return int(curTemp), int(minTemp), int(avgTemp), int(maxTemp), err
-	}
-}
-
 func shouldSendReply(chatID int64) bool {
 	currentTime := time.Now()
 	lastReplyTime, exists := lastReplyTimeMap[chatID]
@@ -215,7 +62,6 @@ func shouldSendReply(chatID int64) bool {
 
 	return false
 }
-
 
 func shouldSendReminder() bool {
 	currentTime := time.Now()
