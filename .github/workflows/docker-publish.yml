@@ -62,16 +62,23 @@ jobs:
           echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             docker build -t "${IMAGE}:latest" .
+          else
+            docker build -t "${IMAGE}:${TIMESTAMP}" .
           fi
-          docker build -t "${IMAGE}:${TIMESTAMP}" .
 
       - name: Test Docker image
         run: |
-          docker run --rm "${IMAGE}:${{ env.TIMESTAMP }}" ls -la | grep bot
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker run --rm "${IMAGE}:latest" ls -la | grep bot
+          else
+            docker run --rm "${IMAGE}:${{ env.TIMESTAMP }}" ls -la | grep bot
+          fi
 
       - name: Push Docker image
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             docker push "${IMAGE}:latest"
+          else
+            docker push "${IMAGE}:${{ env.TIMESTAMP }}"
           fi
-          docker push "${IMAGE}:${{ env.TIMESTAMP }}"
+
