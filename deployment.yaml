@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kolya-bot
-        image: north21/kolya_bot:202411070652 # change for automatic deployment!
+        image: north21/kolya_bot:latest
         startupProbe:
           exec:
             command: ["sh", "-c", "pgrep bot || exit 1"]
