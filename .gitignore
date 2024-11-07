@@ -168,3 +168,4 @@ hello-world.py
 cov-report
 .pypirc*
 
+**/.git
