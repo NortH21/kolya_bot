@@ -513,26 +513,40 @@ func main() {
 			countryCode := isdayoff.CountryCode("ru")
 			pre := false
 			covid := false
-		
-			tomorrow, err := dayOff.Tomorrow(isdayoff.Params{
-				CountryCode: &countryCode,
-				Pre:         &pre,
-				Covid:       &covid,
-			})
-			if err != nil {
-				fmt.Println("Ошибка при проверке завтрашнего дня:", err)
-				return
+	
+			var tomorrow *isdayoff.DayType
+			var err error
+	
+			maxRetries := 3
+			for attempts := 0; attempts < maxRetries; attempts++ {
+				tomorrow, err = dayOff.Tomorrow(isdayoff.Params{
+					CountryCode: &countryCode,
+					Pre:         &pre,
+					Covid:       &covid,
+				})
+				if err == nil {
+					break
+				}
+				log.Println("Ошибка при проверке завтрашнего дня:", err)
+				time.Sleep(1 * time.Second)
 			}
-		
-			// Если завтра выходной, отправляем приветствие
+	
+			if err != nil {
+				log.Println("Не удалось получить данные о завтрашнем дне после нескольких попыток:", err)
+				time.Sleep(checkInterval)
+				continue
+			}
+	
 			currentTime := time.Now()
 			if *tomorrow == isdayoff.DayTypeNonWorking && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
-				sendFridayGreetings(bot)
+				go sendFridayGreetings(bot)
 			}
+	
 			if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
 				(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
-				sendMorningGreetings(bot)
+				go sendMorningGreetings(bot)
 			}
+	
 			time.Sleep(checkInterval)
 		}
 	}()
