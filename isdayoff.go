@@ -8,13 +8,18 @@ import (
 	"github.com/anatoliyfedorenko/isdayoff"
 )
 
-func CheckWorkday() (*isdayoff.DayType, error) {
+type WorkdayInfo struct {
+	Tomorrow *isdayoff.DayType
+	Today    *isdayoff.DayType
+}
+
+func CheckWorkday() (*WorkdayInfo, error) {
 	dayOff := isdayoff.New()
 	countryCode := isdayoff.CountryCode("ru")
 	pre := false
 	covid := false
 
-	var tomorrow *isdayoff.DayType
+	var tomorrow, today *isdayoff.DayType
 	var err error
 
 	maxRetries := 3
@@ -24,18 +29,33 @@ func CheckWorkday() (*isdayoff.DayType, error) {
 			Pre:         &pre,
 			Covid:       &covid,
 		})
+		if err != nil {
+			log.Println("Ошибка при проверке завтрашнего дня:", err)
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		today, err = dayOff.Today(isdayoff.Params{
+			CountryCode: &countryCode,
+			Pre:         &pre,
+			Covid:       &covid,
+		})
 		if err == nil {
 			break
 		}
-		log.Println("Ошибка при проверке завтрашнего дня:", err)
+		log.Println("Ошибка при проверке сегодняшнего дня:", err)
 		time.Sleep(1 * time.Second)
 	}
 
 	if err != nil {
-		log.Println("Не удалось получить данные о завтрашнем дне после нескольких попыток:", err)
+		log.Println("Не удалось получить данные о завтрашнем или сегодняшнем дне после нескольких попыток:", err)
 		return nil, err
 	}
 
-	return tomorrow, nil
+	return &WorkdayInfo{
+		Tomorrow: tomorrow,
+		Today:    today,
+	}, nil
+
 }
 

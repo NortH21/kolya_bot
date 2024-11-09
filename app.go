@@ -516,13 +516,18 @@ func main() {
 				go sendMorningGreetings(bot)
 			}
 
-			tomorrow, err := CheckWorkday()
+			workdayInfo, err := CheckWorkday()
 			if err != nil {
 				continue
 			}
 
-			if *tomorrow == isdayoff.DayTypeNonWorking && currentTime.Hour() == 17 && currentTime.Minute() == 0 {
-				go sendFridayGreetings(bot)
+			if workdayInfo.Today != nil && *workdayInfo.Today == isdayoff.DayTypeWorking {
+				tomorrow := workdayInfo.Tomorrow
+				if tomorrow != nil && *tomorrow == isdayoff.DayTypeNonWorking {
+					if currentTime.Hour() == 17 && currentTime.Minute() == 0 {
+						go sendFridayGreetings(bot)
+					}
+				}
 			}
 	
 			time.Sleep(checkInterval)
