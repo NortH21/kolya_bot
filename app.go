@@ -510,7 +510,6 @@ func main() {
 	go func() {
 		for {
 			currentTime := time.Now()
-
 			if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
 				(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
 				go sendMorningGreetings(bot)
@@ -529,7 +528,6 @@ func main() {
 					}
 				}
 			}
-	
 			time.Sleep(checkInterval)
 		}
 	}()
