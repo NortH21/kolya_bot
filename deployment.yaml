@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kolya-bot
-        image: north21/kolya_bot:latest
+        image: north21/kolya_bot
         startupProbe:
           exec:
             command: ["sh", "-c", "pgrep bot || exit 1"]
