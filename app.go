@@ -326,7 +326,7 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
-				case "300", "триста", "тристо", "три сотни", "3 сотки", "три сотки", "299+1":
+				case "300", "триста", "тристо", "три сотни", "3 сотки", "три сотки":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Отсоси у тракториста)))")
 						reply.ReplyToMessageID = replyToMessageID
