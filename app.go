@@ -515,6 +515,9 @@ func main() {
 						log.Println(err)
 					}
 				}
+			} else if update.Message == nil {
+				log.Println("Игнорируем")
+				continue
 			}
 		}
 	}()
