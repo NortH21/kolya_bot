@@ -241,6 +241,21 @@ func main() {
 					}
 				}
 
+				if strings.HasPrefix(text, "/chat") {
+					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
+
+					textresp := Chat(commandText)
+					if textresp == "" {
+						log.Println("Получен пустой текст от чата")
+						return
+					}
+					reply := tgbotapi.NewMessage(chatID, textresp)
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 
 				rand.Seed(time.Now().UnixNano())
