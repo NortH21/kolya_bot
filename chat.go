@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"bytes"
 	"encoding/json"
 	"log"
@@ -36,33 +37,46 @@ type Delta struct {
 }
 
 func Chat(text string) string {
-	url := "http://ddg-chat:8787/v1/chat/completions"
+	envVarChatUrl := "CHAT_URL"
+
+	chatUrl, exists := os.LookupEnv(envVarChatUrl)
+	if !exists {
+		chatUrl = "ddg-chat:8787"
+	}
+
+	envVarModel := "MODEL"
+	model, exists := os.LookupEnv(envVarModel)
+	if !exists {
+		model = "gpt-4o-mini"
+	}
+
+	url := "http://" + chatUrl + "/v1/chat/completions"
 	requestBody := RequestBody{
 		Messages: []Message{
 			{Role: "user", Content: text},
 		},
-		Model:  "gpt-4o-mini",
+		Model:  model,
 		Stream: true,
 	}
 
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
-		log.Println("Ошибка при маршализации JSON:", err)
+		log.Println("Chat Ошибка при маршализации JSON:", err)
 		return ""
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println("Ошибка при выполнении запроса:", err)
+		log.Println("Chat Ошибка при выполнении запроса:", err)
 		return ""
 	}
 	defer resp.Body.Close()
 
-	log.Printf("Статус ответа: %d\n", resp.StatusCode)
+	log.Printf("Chat Статус ответа: %d\n", resp.StatusCode)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("Ошибка при чтении тела ответа:", err)
+		log.Println("Chat Ошибка при чтении тела ответа:", err)
 		return ""
 	}
 
@@ -82,7 +96,7 @@ func Chat(text string) string {
 	}
 
 	if result == "" {
-		log.Println("Ответ пустой после декодирования.")
+		log.Println("Chat Ответ пустой после декодирования.")
 	}
 
 	return result
