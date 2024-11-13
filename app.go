@@ -257,6 +257,7 @@ func main() {
 					}
 
 					reply := tgbotapi.NewMessage(chatID, textresp)
+					reply.ParseMode = tgbotapi.ModeMarkdown
 					_, err := bot.Send(reply)
 					if err != nil {
 						log.Println(err)
