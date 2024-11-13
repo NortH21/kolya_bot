@@ -253,7 +253,6 @@ func main() {
 					typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
 					if _, err := bot.Send(typingMessage); err != nil {
 						log.Println("Ошибка при отправке действия печати:", err)
-						continue
 					}
 
 					reply := tgbotapi.NewMessage(chatID, textresp)
