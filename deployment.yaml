@@ -16,6 +16,10 @@ spec:
       labels:
         app: kolya-bot
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 3000
       containers:
       - name: kolya-bot
         image: north21/kolya_bot
@@ -56,8 +60,6 @@ spec:
               secretKeyRef:
                 name: anecdotica
                 key: key
-        securityContext:
-          runAsNonRoot: true
         resources:
           limits:
             cpu: "1"
@@ -69,6 +71,11 @@ spec:
         image: leafmoes/ddg-chat:latest
         ports:
         - containerPort: 8787
+        env:
+        - name: CHAT_URL
+          value: "ddg-chat:8787"
+        - name: MODEL
+          value: "gpt-4o-mini"
         livenessProbe:
           httpGet:
             path: /
