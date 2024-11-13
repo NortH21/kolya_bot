@@ -101,5 +101,5 @@ spec:
     - port: 8787
       targetPort: 8787
   selector:
-    app: ddg-chat
+    app: kolya-bot
 
