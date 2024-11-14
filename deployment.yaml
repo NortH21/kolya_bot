@@ -78,14 +78,14 @@ spec:
           value: "gpt-4o-mini"
         livenessProbe:
           httpGet:
-            path: /
+            path: /ping
             port: 8787
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /ping
             port: 8787
           initialDelaySeconds: 5
           periodSeconds: 5
