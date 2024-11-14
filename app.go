@@ -244,11 +244,11 @@ func main() {
 				if strings.HasPrefix(text, "/chat") {
 					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
 
-					typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
-					if _, err := bot.Send(typingMessage); err != nil {
-						log.Println("Ошибка при отправке действия печати:", err)
-					}
-					
+					// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
+					// if _, err := bot.Send(typingMessage); err != nil {
+					// 	log.Println("Ошибка при отправке действия печати:", err)
+					// }
+
 					textresp := Chat(commandText)
 					if textresp == "" {
 						log.Println("Получен пустой текст от чата")
