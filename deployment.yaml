@@ -60,6 +60,10 @@ spec:
               secretKeyRef:
                 name: anecdotica
                 key: key
+          - name: CHAT_URL
+            value: "ddg-chat.kolya-bot.svc.cluster.local:8787"
+          - name: MODEL
+            value: "gpt-4o-mini"
         resources:
           limits:
             cpu: "1"
@@ -71,11 +75,6 @@ spec:
         image: leafmoes/ddg-chat:latest
         ports:
         - containerPort: 8787
-        env:
-        - name: CHAT_URL
-          value: "ddg-chat.kolya-bot.svc.cluster.local:8787"
-        - name: MODEL
-          value: "gpt-4o-mini"
         livenessProbe:
           httpGet:
             path: /ping
