@@ -244,18 +244,24 @@ func main() {
 				if strings.HasPrefix(text, "/chat") {
 					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
 
+					resultChan := make(chan string)
+
+					go func() {
+						textResp := Chat(commandText)
+						resultChan <- textResp
+					}()
+
 					// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
 					// if _, err := bot.Send(typingMessage); err != nil {
 					// 	log.Println("Ошибка при отправке действия печати:", err)
 					// }
-
-					textresp := Chat(commandText)
-					if textresp == "" {
+					textResp := <-resultChan
+					if textResp == "" {
 						log.Println("Получен пустой текст от чата")
 						return
 					}
 
-					reply := tgbotapi.NewMessage(chatID, textresp)
+					reply := tgbotapi.NewMessage(chatID, textResp)
 					reply.ParseMode = tgbotapi.ModeMarkdown
 					_, err := bot.Send(reply)
 					if err != nil {

@@ -1,13 +1,15 @@
 package main
 
 import (
-	"os"
 	"bytes"
+	"context"
 	"encoding/json"
-	"log"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 )
 
 type RequestBody struct {
@@ -65,9 +67,30 @@ func Chat(text string) string {
 		return ""
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		log.Println("Chat Ошибка при выполнении запроса:", err)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	var resp *http.Response
+	var retryCount = 3
+	for i := 0; i < retryCount; i++ {
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			log.Println("Chat Ошибка при создании запроса:", err)
+			return ""
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err = http.DefaultClient.Do(req)
+		if err != nil {
+			log.Printf("Chat Ошибка при выполнении запроса (попытка %d): %v\n", i+1, err)
+			time.Sleep(2 * time.Second)
+			continue
+		}
+		break
+	}
+
+	if resp == nil {
+		log.Println("Chat Все попытки завершились неудачей.")
 		return ""
 	}
 	defer resp.Body.Close()
