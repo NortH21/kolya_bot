@@ -71,7 +71,7 @@ func Chat(text string) string {
 	defer cancel()
 
 	var resp *http.Response
-	var retryCount = 3
+	var retryCount = 1
 	for i := 0; i < retryCount; i++ {
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonData))
 		if err != nil {
@@ -83,7 +83,6 @@ func Chat(text string) string {
 		resp, err = http.DefaultClient.Do(req)
 		if err != nil {
 			log.Printf("Chat Ошибка при выполнении запроса (попытка %d): %v\n", i+1, err)
-			time.Sleep(2 * time.Second)
 			continue
 		}
 		break
