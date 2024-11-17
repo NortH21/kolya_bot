@@ -266,11 +266,24 @@ func main() {
 				if strings.HasPrefix(text, "/img") {
 					go func() {
 						promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
+
+						if promt == "" {
+							log.Println("Нет промта, ничего не делаем")
+							reply := tgbotapi.NewMessage(chatID, "Нужно указать промт")
+							reply.ReplyToMessageID = replyToMessageID
+							_, err := bot.Send(reply)
+							if err != nil {
+								log.Println(err)
+							}
+						}
+
 						negativepromt := ""
+
 						fileName, err := getImage(promt, negativepromt)
 						if err != nil {
 							log.Println(err)
 						}
+						
 						if fileName == "" {
 							log.Println("Картинка не вернулась")
 						} else {
