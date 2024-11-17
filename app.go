@@ -253,14 +253,13 @@ func main() {
 
 					if textResp == "" {
 						log.Println("Получен пустой текст от чата")
-						return
-					}
-
-					reply := tgbotapi.NewMessage(chatID, textResp)
-					reply.ParseMode = tgbotapi.ModeMarkdown
-					_, err := bot.Send(reply)
-					if err != nil {
-						log.Println(err)
+					} else {
+						reply := tgbotapi.NewMessage(chatID, textResp)
+						reply.ParseMode = tgbotapi.ModeMarkdown
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
 					}
 				}
 
@@ -515,9 +514,6 @@ func main() {
 						log.Println(err)
 					}
 				}
-			} else if update.Message == nil {
-				log.Println("Игнорируем")
-				continue
 			}
 		}
 	}()

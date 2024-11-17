@@ -39,15 +39,12 @@ type Delta struct {
 }
 
 func Chat(text string) string {
-	envVarChatUrl := "CHAT_URL"
-
-	chatUrl, exists := os.LookupEnv(envVarChatUrl)
+	chatUrl, exists := os.LookupEnv("CHAT_URL")
 	if !exists {
 		chatUrl = "ddg-chat:8787"
 	}
 
-	envVarModel := "MODEL"
-	model, exists := os.LookupEnv(envVarModel)
+	model, exists := os.LookupEnv("MODEL")
 	if !exists {
 		model = "gpt-4o-mini"
 	}
@@ -67,11 +64,11 @@ func Chat(text string) string {
 		return ""
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var resp *http.Response
-	var retryCount = 1
+	var retryCount = 3
 	for i := 0; i < retryCount; i++ {
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonData))
 		if err != nil {
