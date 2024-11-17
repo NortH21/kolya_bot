@@ -23,6 +23,9 @@ spec:
       containers:
       - name: kolya-bot
         image: north21/kolya_bot
+        volumeMounts:
+        - name: kolya-bot-storage
+          mountPath: /tmp
         startupProbe:
           exec:
             command: ["sh", "-c", "pgrep bot || exit 1"]
@@ -106,6 +109,9 @@ spec:
           requests:
             cpu: "0.5"
             memory: "256Mi"
+      volumes:
+      - name: kolya-bot-storage
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

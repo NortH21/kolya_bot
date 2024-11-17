@@ -81,7 +81,7 @@ func getImage(prompt string, negativePrompt string) (string, error) {
 		return "", err
 	}
 
-	fileName := "image.png"
+	fileName := "/tmp/image.png"
 	file, err := os.Create(fileName)
 	if err != nil {
 		log.Printf("Ошибка создания файла %s: %v\n", fileName, err)
