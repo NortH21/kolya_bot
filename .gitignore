@@ -169,3 +169,4 @@ cov-report
 .pypirc*
 
 **/.git
+image.png

@@ -263,6 +263,25 @@ func main() {
 					}
 				}
 
+				if strings.HasPrefix(text, "/img") {
+					go func() {
+						promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
+						negativepromt := ""
+						fileName, err := getImage(promt, negativepromt)
+						if err != nil {
+							log.Println(err)
+						}
+						if fileName == "" {
+							log.Println("Картинка не вернулась")
+						} else {
+							photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
+							if _, err = bot.Send(photo); err != nil {
+								log.Println(err)
+							}
+						}
+					}()
+				}
+
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 
 				rand.Seed(time.Now().UnixNano())
