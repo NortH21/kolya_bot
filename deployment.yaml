@@ -60,6 +60,16 @@ spec:
               secretKeyRef:
                 name: anecdotica
                 key: key
+          - name: fusionbrain_key
+            valueFrom:
+              secretKeyRef:
+                name: fusionbrain
+                key: key
+          - name: fusionbrain_secret
+            valueFrom:
+              secretKeyRef:
+                name: fusionbrain
+                key: secret
           - name: CHAT_URL
             value: "ddg-chat.kolya-bot.svc.cluster.local:8787"
           - name: MODEL

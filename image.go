@@ -20,7 +20,7 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 	apiSecret := os.Getenv("fusionbrain_secret")
 
 	if apiKey == "" || apiSecret == "" {
-		return "", fmt.Errorf("не заданы переменные окружения FUSIONBRAIN_API_KEY и FUSIONBRAIN_API_SECRET")
+		return "", fmt.Errorf("не заданы переменные окружения fusionbrain_key и fusionbrain_secret")
 	}
 
 	brain := fusionbrain.NewFusionBrain(client, apiKey, apiSecret)
