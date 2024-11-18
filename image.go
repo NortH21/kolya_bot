@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/dm1trypon/go-fusionbrain-api"
+	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
 )
 
@@ -51,8 +51,28 @@ func addToCache(prompt string, image string) {
 	}
 }
 
+func checkModelAvailability(ctx context.Context, brain *fusionbrain.FusionBrain, modelID int) error {
+	return brain.CheckAvailable(ctx, modelID)
+}
+
+func getLastModel(ctx context.Context, brain *fusionbrain.FusionBrain) (fusionbrain.Model, error) {
+	models, err := brain.GetModels(ctx)
+	if err != nil {
+		return fusionbrain.Model{}, fmt.Errorf("ошибка при получении моделей: %v", err)
+	}
+
+	if len(models) == 0 {
+		return fusionbrain.Model{}, fmt.Errorf("нет доступных моделей")
+	}
+
+	lastModel := models[len(models)-1]
+	fmt.Printf("Последняя модель: %+v\n", lastModel)
+	return lastModel, nil
+}
+
 func genImage(prompt string, negativePrompt string) (string, error) {
 	client := &fasthttp.Client{}
+	ctx := context.Background()
 
 	apiKey := os.Getenv("fusionbrain_key")
 	apiSecret := os.Getenv("fusionbrain_secret")
@@ -63,17 +83,24 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 
 	brain := fusionbrain.NewFusionBrain(client, apiKey, apiSecret)
 
+	lastModel, err := getLastModel(ctx, brain)
+	if err != nil {
+		return "", err
+	}
+
+	if err := checkModelAvailability(ctx, brain, lastModel.ID); err != nil {
+		return "", fmt.Errorf("ошибка при проверке доступности: %v", err)
+	}
+	
 	reqBody := fusionbrain.RequestBody{
 		Prompt:        prompt,
 		NegativePrompt: negativePrompt,
-		Style:        "Детальное фото",
+		Style:        "UHD",
 		Width:        1024,
 		Height:       1024,
 	}
-	modelID := 4
-
-	ctx := context.Background()
-	uuid, err := brain.TextToImage(ctx, reqBody, modelID)
+	
+	uuid, err := brain.TextToImage(ctx, reqBody, lastModel.ID)
 	if err != nil {
 		log.Println("Ошибка при создании изображения: ", err)
 		return "", err

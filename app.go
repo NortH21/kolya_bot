@@ -116,7 +116,7 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	fridayStr, err := getRandomLineFromFile("./files/friday.txt")
 	if err != nil {
 		log.Println("Ошибка при получении строки из файла:", err)
-		return // Возвращаемся, чтобы избежать дальнейших действий при ошибке
+		return
 	}
 
 	reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
@@ -228,6 +228,9 @@ func main() {
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
+				// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
+				// bot.Send(typingMessage)
+
 				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
 					reply := tgbotapi.NewMessage(chatID, text)
@@ -243,11 +246,6 @@ func main() {
 
 				if strings.HasPrefix(text, "/chat") {
 					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
-
-					// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
-					// if _, err := bot.Send(typingMessage); err != nil {
-					// 	log.Println("Ошибка при отправке действия печати:", err)
-					// }
 
 					textResp := Chat(commandText)
 
@@ -286,6 +284,8 @@ func main() {
 							if fileName == "" {
 								log.Println("Картинка не вернулась")
 							} else {
+								// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatUploadPhoto)
+								// bot.Send(typingMessage)
 								photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
 								if _, err = bot.Send(photo); err != nil {
 									log.Println(err)

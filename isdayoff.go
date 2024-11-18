@@ -25,12 +25,12 @@ var (
 )
 
 func CheckWorkday() (*WorkdayInfo, error) {
-	log.Println("Начинаю проверять Workday")
+	// log.Println("Начинаю проверять Workday")
 	cacheDateMutex.Lock()
 	defer cacheDateMutex.Unlock()
 
 	if workdayCache.data != nil && time.Since(workdayCache.timestamp) < cacheDuration {
-		log.Println("Workday есть в кеше")
+		// log.Println("Workday есть в кеше")
 		return workdayCache.data, nil
 	}
 
