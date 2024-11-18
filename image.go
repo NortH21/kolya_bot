@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/dm1trypon/go-fusionbrain-api"
 	"github.com/valyala/fasthttp"
 )
@@ -24,6 +25,9 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 	}
 
 	brain := fusionbrain.NewFusionBrain(client, apiKey, apiSecret)
+
+	prompt = strings.ReplaceAll(prompt, "\"", "")
+	log.Println("prompt: ", prompt)
 
 	reqBody := fusionbrain.RequestBody{
 		Prompt:        prompt,
@@ -81,7 +85,8 @@ func getImage(prompt string, negativePrompt string) (string, error) {
 		return "", err
 	}
 
-	fileName := "/tmp/image.png"
+	randomID := uuid.New().String()
+	fileName := fmt.Sprintf("/tmp/image_%s.png", randomID)
 	file, err := os.Create(fileName)
 	if err != nil {
 		log.Printf("Ошибка создания файла %s: %v\n", fileName, err)
@@ -94,6 +99,8 @@ func getImage(prompt string, negativePrompt string) (string, error) {
 		log.Printf("Ошибка записи в файл %s: %v\n", fileName, err)
 		return "", err
 	}
+
+	log.Print("fileName: ", fileName)
 
 	return fileName, nil
 }
