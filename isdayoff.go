@@ -1,8 +1,8 @@
-// isdayoff.go
 package main
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	"github.com/anatoliyfedorenko/isdayoff"
@@ -13,7 +13,27 @@ type WorkdayInfo struct {
 	Today    *isdayoff.DayType
 }
 
+type Cache struct {
+	data      *WorkdayInfo
+	timestamp time.Time
+}
+
+var (
+	workdayCache = Cache{}
+	cacheDateMutex sync.Mutex
+	cacheDuration = 2 * time.Hour
+)
+
 func CheckWorkday() (*WorkdayInfo, error) {
+	log.Println("Начинаю проверять Workday")
+	cacheDateMutex.Lock()
+	defer cacheDateMutex.Unlock()
+
+	if workdayCache.data != nil && time.Since(workdayCache.timestamp) < cacheDuration {
+		log.Println("Workday есть в кеше")
+		return workdayCache.data, nil
+	}
+
 	dayOff := isdayoff.New()
 	countryCode := isdayoff.CountryCode("ru")
 	pre := false
@@ -52,10 +72,11 @@ func CheckWorkday() (*WorkdayInfo, error) {
 		return nil, err
 	}
 
-	return &WorkdayInfo{
+	workdayCache.data = &WorkdayInfo{
 		Tomorrow: tomorrow,
 		Today:    today,
-	}, nil
+	}
+	workdayCache.timestamp = time.Now()
 
+	return workdayCache.data, nil
 }
-
