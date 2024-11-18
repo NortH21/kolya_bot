@@ -7,12 +7,49 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/dm1trypon/go-fusionbrain-api"
 	"github.com/valyala/fasthttp"
 )
+
+type CacheItem struct {
+	Image      string
+	CreatedAt  time.Time
+}
+
+var (
+	imageCache = make(map[string]CacheItem)
+	cacheMutex sync.Mutex
+	cacheTTL   = 1 * time.Minute
+)
+
+func getFromCache(prompt string) (string, bool) {
+	cacheMutex.Lock()
+	defer cacheMutex.Unlock()
+
+	item, found := imageCache[prompt]
+	log.Println(imageCache)
+	if !found {
+		return "", false
+	}
+	if time.Since(item.CreatedAt) > cacheTTL {
+		delete(imageCache, prompt)
+		return "", false
+	}
+	return item.Image, true
+}
+
+func addToCache(prompt string, image string) {
+	cacheMutex.Lock()
+	defer cacheMutex.Unlock()
+	imageCache[prompt] = CacheItem{
+		Image:     image,
+		CreatedAt: time.Now(),
+	}
+}
 
 func genImage(prompt string, negativePrompt string) (string, error) {
 	client := &fasthttp.Client{}
@@ -25,9 +62,6 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 	}
 
 	brain := fusionbrain.NewFusionBrain(client, apiKey, apiSecret)
-
-	prompt = strings.ReplaceAll(prompt, "\"", "")
-	log.Println("prompt: ", prompt)
 
 	reqBody := fusionbrain.RequestBody{
 		Prompt:        prompt,
@@ -72,6 +106,15 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 }
 
 func getImage(prompt string, negativePrompt string) (string, error) {
+
+	prompt = strings.ReplaceAll(prompt, "\"", "")
+	log.Println("prompt: ", prompt)
+
+	if cachedImage, found := getFromCache(prompt); found {
+		log.Println("Возвращаем изображение из кеша")
+		return cachedImage, nil
+	}
+
 	img, err := genImage(prompt, negativePrompt)
 	if err != nil {
 		return "", err
@@ -101,6 +144,8 @@ func getImage(prompt string, negativePrompt string) (string, error) {
 	}
 
 	log.Print("fileName: ", fileName)
+
+	addToCache(prompt, fileName)
 
 	return fileName, nil
 }

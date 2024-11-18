@@ -275,21 +275,21 @@ func main() {
 							if err != nil {
 								log.Println(err)
 							}
-						}
-
-						negativepromt := ""
-
-						fileName, err := getImage(promt, negativepromt)
-						if err != nil {
-							log.Println(err)
-						}
-						
-						if fileName == "" {
-							log.Println("Картинка не вернулась")
 						} else {
-							photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
-							if _, err = bot.Send(photo); err != nil {
+							negativepromt := ""
+
+							fileName, err := getImage(promt, negativepromt)
+							if err != nil {
 								log.Println(err)
+							}
+
+							if fileName == "" {
+								log.Println("Картинка не вернулась")
+							} else {
+								photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
+								if _, err = bot.Send(photo); err != nil {
+									log.Println(err)
+								}
 							}
 						}
 					}()
