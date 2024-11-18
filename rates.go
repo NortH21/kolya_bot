@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-
 )
 
 func getExchangeRates(currencyCode string) (float64, error) {

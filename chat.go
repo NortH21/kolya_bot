@@ -24,14 +24,14 @@ type Message struct {
 }
 
 type ResponseChunk struct {
-	ID      string `json:"id"`
-	Object  string `json:"object"`
+	ID      string   `json:"id"`
+	Object  string   `json:"object"`
 	Choices []Choice `json:"choices"`
 }
 
 type Choice struct {
-	Index int    `json:"index"`
-	Delta Delta  `json:"delta"`
+	Index int   `json:"index"`
+	Delta Delta `json:"delta"`
 }
 
 type Delta struct {

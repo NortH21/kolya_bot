@@ -16,8 +16,8 @@ import (
 )
 
 type CacheItem struct {
-	Image      string
-	CreatedAt  time.Time
+	Image     string
+	CreatedAt time.Time
 }
 
 var (
@@ -91,15 +91,15 @@ func genImage(prompt string, negativePrompt string) (string, error) {
 	if err := checkModelAvailability(ctx, brain, lastModel.ID); err != nil {
 		return "", fmt.Errorf("ошибка при проверке доступности: %v", err)
 	}
-	
+
 	reqBody := fusionbrain.RequestBody{
-		Prompt:        prompt,
+		Prompt:         prompt,
 		NegativePrompt: negativePrompt,
-		Style:        "UHD",
-		Width:        1024,
-		Height:       1024,
+		Style:          "UHD",
+		Width:          1024,
+		Height:         1024,
 	}
-	
+
 	uuid, err := brain.TextToImage(ctx, reqBody, lastModel.ID)
 	if err != nil {
 		log.Println("Ошибка при создании изображения: ", err)

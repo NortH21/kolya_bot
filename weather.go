@@ -1,4 +1,4 @@
-//  weather.go
+// weather.go
 package main
 
 import (
@@ -58,4 +58,3 @@ func getTemperature(city string) (int, int, int, int, error) {
 		return int(curTemp), int(minTemp), int(avgTemp), int(maxTemp), err
 	}
 }
-

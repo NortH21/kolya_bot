@@ -12,8 +12,8 @@ import (
 	"time"
 	_ "time/tzdata"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/anatoliyfedorenko/isdayoff"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var (
@@ -30,6 +30,7 @@ var (
 )
 
 var replyCountMap = make(map[int64]int)
+
 const maxReplies = 3
 const replyInterval = 35 * time.Minute
 

@@ -19,9 +19,9 @@ type Cache struct {
 }
 
 var (
-	workdayCache = Cache{}
+	workdayCache   = Cache{}
 	cacheDateMutex sync.Mutex
-	cacheDuration = 2 * time.Hour
+	cacheDuration  = 2 * time.Hour
 )
 
 func CheckWorkday() (*WorkdayInfo, error) {
