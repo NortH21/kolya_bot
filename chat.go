@@ -64,7 +64,7 @@ func Chat(text string) string {
 		return ""
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	var resp *http.Response
