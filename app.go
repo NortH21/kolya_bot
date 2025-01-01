@@ -566,10 +566,10 @@ func main() {
 		for {
 			currentTime := time.Now()
 			log.Println("currentTime: ", currentTime, "currentTime.Month(): ", currentTime.Month(), "currentTime.Hour():", currentTime.Hour())
-			if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
-				(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
-				go sendMorningGreetings(bot)
-			}
+			// if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
+			// 	(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
+			// 	go sendMorningGreetings(bot)
+			// }
 
 			workdayInfo, err := CheckWorkday()
 			if err != nil {
