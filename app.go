@@ -114,10 +114,16 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	fridayStr, err := getRandomLineFromFile("./files/friday.txt")
-	if err != nil {
-		log.Println("Ошибка при получении строки из файла:", err)
-		return
+	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма")
+	if fridayStr == "" {
+		log.Println("Получен пустой текст от чата")
+		
+		var err error
+		fridayStr, err = getRandomLineFromFile("./files/friday.txt")
+		if err != nil {
+			log.Println("Ошибка при получении строки из файла:", err)
+			return
+		}
 	}
 
 	reply := tgbotapi.NewMessage(reminderChatID, fridayStr)
