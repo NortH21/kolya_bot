@@ -183,6 +183,7 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 }
 
 func sendReply(bot *tgbotapi.BotAPI, chatID int64, replyToMessageID int, text string) {
+	// TODO added ignore shouldSendReply
 	if shouldSendReply(chatID) {
 		reply := tgbotapi.NewMessage(chatID, text)
 		reply.ReplyToMessageID = replyToMessageID
