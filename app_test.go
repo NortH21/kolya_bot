@@ -128,28 +128,6 @@ func TestGetRandomLineFromFileMorning(t *testing.T) {
 	}
 }
 
-// func TestGenerateJokesURL(t *testing.T) {
-// 	pid := "1234"
-// 	key := "testkey"
-// 	uts := strconv.FormatInt(time.Now().Unix(), 10)
-
-// 	query := url.Values{}
-// 	query.Set("pid", pid)
-// 	query.Set("method", "getRandItem")
-// 	query.Set("uts", uts)
-// 	query.Set("category", "4") // 4 – чёрный юмор
-// 	query.Set("genre", "1")    // 1 – анекдоты
-// 	hash := md5.Sum([]byte(query.Encode() + key))
-
-// 	expectedURL := "http://anecdotica.ru/api?category=4&genre=1&method=getRandItem&pid=1234&uts=" + uts + "&hash=" + hex.EncodeToString(hash[:])
-
-// 	actualURL := generateJokesURL(pid, key)
-
-// 	if actualURL != expectedURL {
-// 		t.Errorf("Expected URL %s, got %s", expectedURL, actualURL)
-// 	}
-// }
-
 func TestIsLastDayOfMonth(t *testing.T) {
 	tests := []struct {
 		date       time.Time
@@ -167,52 +145,3 @@ func TestIsLastDayOfMonth(t *testing.T) {
 		})
 	}
 }
-
-
-// func TestGetJokes(t *testing.T) {
-// 	pid := "1234"
-// 	key := "testkey"
-
-// 	url := generateJokesURL(pid, key)
-
-// 	resp, err := http.Get(url)
-// 	if err != nil {
-// 		t.Errorf("Error while sending request: %v", err)
-// 		return
-// 	}
-// 	defer resp.Body.Close()
-
-// 	body, err := ioutil.ReadAll(resp.Body)
-// 	if err != nil {
-// 		t.Errorf("Error reading response body: %v", err)
-// 		return
-// 	}
-
-// 	// Added AnecdoteResponse struct
-// 	type AnecdoteResponse struct {
-// 		Result struct {
-// 			Error  int
-// 			ErrMsg string
-// 		}
-// 		Item struct {
-// 			Text string
-// 		}
-// 	}
-
-// 	var response AnecdoteResponse
-// 	err = json.Unmarshal(body, &response)
-// 	if err != nil {
-// 		t.Errorf("Error unmarshaling JSON: %v", err)
-// 		return
-// 	}
-
-// 	if response.Result.Error != 0 {
-// 		t.Errorf("Expected no error, got: %d - %s", response.Result.Error, response.Result.ErrMsg)
-// 	}
-
-// 	if response.Item.Text == "" {
-// 		t.Error("Expected joke text to be non-empty")
-// 	}
-// }
-
-
