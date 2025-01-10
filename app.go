@@ -253,7 +253,14 @@ func main() {
 
 				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
-					sendReply(bot, chatID, update.Message.MessageID, text)
+					reply := tgbotapi.NewMessage(chatID, text)
+					if bot.Debug {
+						log.Print(chatID, text)
+					}
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 
 				if strings.HasPrefix(text, "/chat") {
