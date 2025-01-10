@@ -387,20 +387,6 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/jokes", "/jokes" + usernameWithAt:
-					text, err := getJokes()
-					if err != nil {
-						log.Fatal(err)
-					}
-					if text == "" {
-						log.Println("Получен пустой текст шутки, выполнение прекращено.")
-						return
-					}
-					reply := tgbotapi.NewMessage(chatID, text)
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
-					}
 				case usernameWithAt:
 					// Список статей
 					ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
