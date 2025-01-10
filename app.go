@@ -176,6 +176,19 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	}
 }
 
+func replySend(bot *tgbotapi.BotAPI, chatID int64, replyToMessageID int, text string) {
+	if shouldSendReply(chatID) {
+		reply := tgbotapi.NewMessage(chatID, text)
+		reply.ReplyToMessageID = replyToMessageID
+		time.Sleep(2 * time.Second)
+		_, err := bot.Send(reply)
+		if err != nil {
+			log.Println(err)
+		}
+		lastReplyTimeMap[chatID] = time.Now()
+	}
+}
+
 func main() {
 
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -323,16 +336,7 @@ func main() {
 						lastReplyTimeMap[chatID] = time.Now()
 					}
 				case "нет", "нет)", "нет!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Пидора ответ")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Пидора ответ")
 				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
 					if shouldSendReply(chatID) {
 						nostr, err := getRandomLineFromFile("./files/no.txt")
@@ -371,16 +375,7 @@ func main() {
 						lastReplyTimeMap[chatID] = time.Now()
 					}
 				case "чо", "чо?", "чо?)":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуй в очо)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуй в очо)")
 				case "конечно", "конечно)", "конечно!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуечно")
