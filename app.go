@@ -176,7 +176,7 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	}
 }
 
-func replySend(bot *tgbotapi.BotAPI, chatID int64, replyToMessageID int, text string) {
+func sendReply(bot *tgbotapi.BotAPI, chatID int64, replyToMessageID int, text string) {
 	if shouldSendReply(chatID) {
 		reply := tgbotapi.NewMessage(chatID, text)
 		reply.ReplyToMessageID = replyToMessageID
@@ -247,7 +247,7 @@ func main() {
 
 				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
-					replySend(bot, chatID, update.Message.MessageID, text)
+					sendReply(bot, chatID, update.Message.MessageID, text)
 				}
 
 				if strings.HasPrefix(text, "/chat") {
@@ -306,44 +306,44 @@ func main() {
 				rand.Seed(time.Now().UnixNano())
 				switch text {
 				case "да", "да)", "да!":
-					replySend(bot, chatID, update.Message.MessageID, "Пизда")
+					sendReply(bot, chatID, update.Message.MessageID, "Пизда")
 				case "мда", "мда)", "мда!":
-					replySend(bot, chatID, update.Message.MessageID, "Манда")
+					sendReply(bot, chatID, update.Message.MessageID, "Манда")
 				case "нет", "нет)", "нет!":
-					replySend(bot, chatID, update.Message.MessageID, "Пидора ответ")
+					sendReply(bot, chatID, update.Message.MessageID, "Пидора ответ")
 				case "a", "а", "a)", "а)", "а!":
-					replySend(bot, chatID, update.Message.MessageID, "Хуй на)")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуй на)")
 				case "естественно", "естественно)", "естественно!":
-					replySend(bot, chatID, update.Message.MessageID, "Хуестественно)")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуестественно)")
 				case "чо", "чо?", "чо?)":
-					replySend(bot, chatID, update.Message.MessageID, "Хуй в очо)")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуй в очо)")
 				case "конечно", "конечно)", "конечно!":
-					replySend(bot, chatID, update.Message.MessageID, "Хуечно)")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуечно)")
 				case "300", "триста", "тристо", "три сотни", "3 сотки", "три сотки":
-					replySend(bot, chatID, update.Message.MessageID, "Отсоси у тракториста)))")
+					sendReply(bot, chatID, update.Message.MessageID, "Отсоси у тракториста)))")
 				case "как сам", "как сам?":
-					replySend(bot, chatID, update.Message.MessageID, "Как сало килограмм")
+					sendReply(bot, chatID, update.Message.MessageID, "Как сало килограмм")
 				case "именно", "именно)", "именно!":
-					replySend(bot, chatID, update.Message.MessageID, "Хуименно")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуименно")
 				case "хуй на":
-					replySend(bot, chatID, update.Message.MessageID, "А тебе два)")
+					sendReply(bot, chatID, update.Message.MessageID, "А тебе два)")
 				case "ну вот":
-					replySend(bot, chatID, update.Message.MessageID, "Хуй тебе в рот)")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуй тебе в рот)")
 				case "нет, тебе", "нет тебе", "нет, тебе!", "нет тебе!":
-					replySend(bot, chatID, update.Message.MessageID, "Нет, тебе!)")
+					sendReply(bot, chatID, update.Message.MessageID, "Нет, тебе!)")
 				case "нет, ты", "нет ты", "нет, ты!", "нет ты!":
-					replySend(bot, chatID, update.Message.MessageID, "Нет, ты!)")
+					sendReply(bot, chatID, update.Message.MessageID, "Нет, ты!)")
 				case "пинг", "ping", "зштп", "gbyu":
-					replySend(bot, chatID, update.Message.MessageID, "Хуинг")
+					sendReply(bot, chatID, update.Message.MessageID, "Хуинг")
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
-					replySend(bot, chatID, update.Message.MessageID, chatIDStr)
+					sendReply(bot, chatID, update.Message.MessageID, chatIDStr)
 				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
 					nostr, err := getRandomLineFromFile("./files/no.txt")
 					if err != nil {
 						log.Fatal(err)
 					}
-					replySend(bot, chatID, update.Message.MessageID, nostr)
+					sendReply(bot, chatID, update.Message.MessageID, nostr)
 				case "/forecast", "/forecast" + usernameWithAt:
 					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
 					if err != nil {
