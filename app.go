@@ -370,6 +370,17 @@ func main() {
 						}
 						lastReplyTimeMap[chatID] = time.Now()
 					}
+				case "чо", "чо?", "чо?)":
+					if shouldSendReply(chatID) {
+						reply := tgbotapi.NewMessage(chatID, "Хуй в очо)")
+						reply.ReplyToMessageID = replyToMessageID
+						time.Sleep(2 * time.Second)
+						_, err := bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
+						lastReplyTimeMap[chatID] = time.Now()
+					}
 				case "конечно", "конечно)", "конечно!":
 					if shouldSendReply(chatID) {
 						reply := tgbotapi.NewMessage(chatID, "Хуечно")
