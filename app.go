@@ -247,15 +247,7 @@ func main() {
 
 				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
-					reply := tgbotapi.NewMessage(chatID, text)
-					if bot.Debug {
-						log.Print(chatID, text)
-					}
-
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
-					}
+					replySend(bot, chatID, update.Message.MessageID, text)
 				}
 
 				if strings.HasPrefix(text, "/chat") {
@@ -314,173 +306,44 @@ func main() {
 				rand.Seed(time.Now().UnixNano())
 				switch text {
 				case "да", "да)", "да!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Пизда")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Пизда")
 				case "мда", "мда)", "мда!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Манда")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Манда")
 				case "нет", "нет)", "нет!":
 					replySend(bot, chatID, update.Message.MessageID, "Пидора ответ")
-				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
-					if shouldSendReply(chatID) {
-						nostr, err := getRandomLineFromFile("./files/no.txt")
-						if err != nil {
-							log.Fatal(err)
-						}
-						reply := tgbotapi.NewMessage(chatID, nostr)
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err = bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
 				case "a", "а", "a)", "а)", "а!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуй на)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуй на)")
 				case "естественно", "естественно)", "естественно!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуестественно)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуестественно)")
 				case "чо", "чо?", "чо?)":
 					replySend(bot, chatID, update.Message.MessageID, "Хуй в очо)")
 				case "конечно", "конечно)", "конечно!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуечно")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуечно)")
 				case "300", "триста", "тристо", "три сотни", "3 сотки", "три сотки":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Отсоси у тракториста)))")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Отсоси у тракториста)))")
 				case "как сам", "как сам?":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Как сало килограмм")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Как сало килограмм")
 				case "именно", "именно)", "именно!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуименно")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуименно")
 				case "хуй на":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "А тебе два)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "А тебе два)")
 				case "ну вот":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуй тебе в рот)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуй тебе в рот)")
 				case "нет, тебе", "нет тебе", "нет, тебе!", "нет тебе!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Нет, тебе!)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Нет, тебе!)")
 				case "нет, ты", "нет ты", "нет, ты!", "нет ты!":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Нет, ты!)")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-						lastReplyTimeMap[chatID] = time.Now()
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Нет, ты!)")
 				case "пинг", "ping", "зштп", "gbyu":
-					if shouldSendReply(chatID) {
-						reply := tgbotapi.NewMessage(chatID, "Хуинг")
-						reply.ReplyToMessageID = replyToMessageID
-						time.Sleep(2 * time.Second)
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					}
+					replySend(bot, chatID, update.Message.MessageID, "Хуинг")
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
-					reply := tgbotapi.NewMessage(chatID, chatIDStr)
-					_, err := bot.Send(reply)
+					replySend(bot, chatID, update.Message.MessageID, chatIDStr)
+				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
+					nostr, err := getRandomLineFromFile("./files/no.txt")
 					if err != nil {
-						log.Println(err)
+						log.Fatal(err)
 					}
+					replySend(bot, chatID, update.Message.MessageID, nostr)
 				case "/forecast", "/forecast" + usernameWithAt:
 					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
 					if err != nil {
