@@ -132,16 +132,30 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	}
 }
 
+func shouldSendMorningGreetings(currentTime time.Time) bool {
+	isSummerTime := currentTime.Month() >= time.April && currentTime.Month() <= time.August
+	isSevenAM := currentTime.Hour() == 7 && currentTime.Minute() == 0
+	isEightAM := currentTime.Hour() == 8 && currentTime.Minute() == 0
+
+	return (isSummerTime && isSevenAM) || (!isSummerTime && isEightAM)
+}
+
 func sendMorningGreetings(bot *tgbotapi.BotAPI) {
-	morningstr, err := getRandomLineFromFile("./files/morning.txt")
-	if err != nil {
-		log.Fatal(err)
+	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма")
+	if morningstr == "" {
+		log.Println("Получен пустой текст от чата")
+		
+		var err error
+		morningstr, err = getRandomLineFromFile("./files/morning.txt")
+		if err != nil {
+			log.Println("Ошибка при получении строки из файла:", err)
+			return
+		}
 	}
 
 	morning := tgbotapi.NewMessage(reminderChatID, morningstr)
-	_, err = bot.Send(morning)
-	if err != nil {
-		log.Println(err)
+	if _, err := bot.Send(morning); err != nil {
+		log.Println("Ошибка при отправке сообщения:", err)
 	}
 
 	curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
@@ -282,7 +296,8 @@ func main() {
 				}
 
 				if strings.HasPrefix(text, "/img") {
-					reply := tgbotapi.NewMessage(chatID, "@Ramil4ik рисуй пес! давай покажи класс")
+					chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
+					reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
 					reply.ParseMode = tgbotapi.ModeMarkdown
 					_, err := bot.Send(reply)
 					if err != nil {
@@ -435,16 +450,15 @@ func main() {
 			time.Sleep(checkInterval)
 		}
 	}()
-
+	
 	// Friday/morning loop
 	go func() {
 		for {
 			currentTime := time.Now()
 			log.Println("currentTime: ", currentTime, "currentTime.Month(): ", currentTime.Month(), "currentTime.Hour():", currentTime.Hour())
-			// if (currentTime.Month() >= time.April && currentTime.Month() <= time.August && currentTime.Hour() == 7 && currentTime.Minute() == 0) ||
-			// 	(currentTime.Month() < time.April || currentTime.Month() > time.August && currentTime.Hour() == 8 && currentTime.Minute() == 0) {
-			// 	go sendMorningGreetings(bot)
-			// }
+			if shouldSendMorningGreetings(currentTime) {
+				sendMorningGreetings(bot)
+			}
 
 			workdayInfo, err := CheckWorkday()
 			if err != nil {
