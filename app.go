@@ -455,7 +455,7 @@ func main() {
 	go func() {
 		for {
 			currentTime := time.Now()
-			log.Println("currentTime: ", currentTime, "currentTime.Month(): ", currentTime.Month(), "currentTime.Hour():", currentTime.Hour())
+			log.Printf("currentTime: %v, currentTime.Month(): %v, currentTime.Hour(): %v\n", currentTime, currentTime.Month(), currentTime.Hour())
 			if shouldSendMorningGreetings(currentTime) {
 				sendMorningGreetings(bot)
 			}
