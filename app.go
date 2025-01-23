@@ -282,6 +282,12 @@ func main() {
 				}
 
 				if strings.HasPrefix(text, "/img") {
+					reply := tgbotapi.NewMessage(chatID, "@Ramil4ik рисуй пес! давай покажи класс")
+					reply.ParseMode = tgbotapi.ModeMarkdown
+					_, err := bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
 					go func() {
 						promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
 
