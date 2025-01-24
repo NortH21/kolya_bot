@@ -81,7 +81,7 @@ func shouldSendReminder() bool {
 func sendReminder(bot *tgbotapi.BotAPI) {
 	reminderMessage, err := getRandomLineFromFile("./files/reminder.txt")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	reply := tgbotapi.NewMessage(reminderChatID, reminderMessage)
@@ -296,13 +296,6 @@ func main() {
 				}
 
 				if strings.HasPrefix(text, "/img") {
-					chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
-					reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
-					reply.ParseMode = tgbotapi.ModeMarkdown
-					_, err := bot.Send(reply)
-					if err != nil {
-						log.Println(err)
-					}
 					go func() {
 						promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
 
@@ -315,6 +308,13 @@ func main() {
 								log.Println(err)
 							}
 						} else {
+							//chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
+							//reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
+							//reply.ParseMode = tgbotapi.ModeMarkdown
+							//_, err := bot.Send(reply)
+							//if err != nil {
+							//	log.Println(err)
+							//}
 							negativepromt := ""
 
 							fileName, err := getImage(promt, negativepromt)
@@ -325,8 +325,6 @@ func main() {
 							if fileName == "" {
 								log.Println("Картинка не вернулась")
 							} else {
-								// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatUploadPhoto)
-								// bot.Send(typingMessage)
 								photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
 								if _, err = bot.Send(photo); err != nil {
 									log.Println(err)
@@ -376,7 +374,7 @@ func main() {
 				case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
 					nostr, err := getRandomLineFromFile("./files/no.txt")
 					if err != nil {
-						log.Fatal(err)
+						log.Println(err)
 					}
 					sendReply(bot, chatID, update.Message.MessageID, nostr)
 				case "/forecast", "/forecast" + usernameWithAt:
@@ -426,7 +424,7 @@ func main() {
 					// Список статей
 					ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
 					if err != nil {
-						log.Fatal(err)
+						log.Println(err)
 					}
 					reply := tgbotapi.NewMessage(chatID, ukrf)
 					if bot.Debug {
@@ -455,7 +453,7 @@ func main() {
 	go func() {
 		for {
 			currentTime := time.Now()
-			log.Printf("currentTime: %v, currentTime.Month(): %v, currentTime.Hour(): %v\n", currentTime, currentTime.Month(), currentTime.Hour())
+			//log.Printf("currentTime: %v, currentTime.Month(): %v, currentTime.Hour(): %v\n", currentTime, currentTime.Month(), currentTime.Hour())
 			if shouldSendMorningGreetings(currentTime) {
 				sendMorningGreetings(bot)
 			}
