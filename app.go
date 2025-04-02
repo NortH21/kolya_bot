@@ -224,7 +224,7 @@ func main() {
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 
 	bot.Debug = true
@@ -237,7 +237,7 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 
 	// Updates loop
@@ -368,6 +368,8 @@ func main() {
 					sendReply(bot, chatID, update.Message.MessageID, "Нет, ты!)")
 				case "пинг", "ping", "зштп", "gbyu":
 					sendReply(bot, chatID, update.Message.MessageID, "Хуинг")
+				case "+-", "±", "-+", "плюс минус":
+					sendReply(bot, chatID, update.Message.MessageID, "Ты определись нахуй")
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					sendReply(bot, chatID, update.Message.MessageID, chatIDStr)
@@ -416,6 +418,18 @@ func main() {
 					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
 					ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
 					reply := tgbotapi.NewMessage(chatID, ratesstr)
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				case "/fucking-great-advice", "/fucking-great-advice" + usernameWithAt:
+					fuckingGreatAdvice, err := getGreatAdvice()
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+
+					reply := tgbotapi.NewMessage(chatID, fuckingGreatAdvice)
 					_, err = bot.Send(reply)
 					if err != nil {
 						log.Println(err)
