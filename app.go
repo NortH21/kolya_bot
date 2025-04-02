@@ -199,6 +199,18 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	if err != nil {
 		log.Println(err)
 	}
+
+	gga, err := getGreatAdvice("latest")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	messageText := "Совет дня, посоны: " + gga
+	ggam := tgbotapi.NewMessage(reminderChatID, messageText)
+	if _, err := bot.Send(ggam); err != nil {
+		log.Println("Ошибка при отправке сообщения:", err)
+	}
 }
 
 func sendReply(bot *tgbotapi.BotAPI, chatID int64, replyToMessageID int, text string) {
@@ -428,7 +440,7 @@ func main() {
 						log.Println(err)
 					}
 				case "/fucking_great_advice", "/fucking_great_advice" + usernameWithAt:
-					fuckingGreatAdvice, err := getGreatAdvice()
+					fuckingGreatAdvice, err := getGreatAdvice("random")
 					if err != nil {
 						fmt.Println(err)
 						return

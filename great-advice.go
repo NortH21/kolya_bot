@@ -14,8 +14,8 @@ type Advice struct {
 	Sound string `json:"sound"`
 }
 
-func getGreatAdvice() (string, error) {
-	resp, err := http.Get("https://fucking-great-advice.ru/api/random")
+func getGreatAdvice(typega string) (string, error) {
+	resp, err := http.Get("https://fucking-great-advice.ru/api/" + typega)
 	if err != nil {
 		log.Println("Ошибка при выполнении запроса:", err)
 		return "", err
