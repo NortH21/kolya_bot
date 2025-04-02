@@ -141,7 +141,7 @@ func shouldSendMorningGreetings(currentTime time.Time) bool {
 }
 
 func sendMorningGreetings(bot *tgbotapi.BotAPI) {
-	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма")
+	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, надо чтобы каждый день было разное сообщение.")
 	if morningstr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -187,6 +187,11 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
 	ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
 	ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+
+	rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
+	if _, err := bot.Send(rates); err != nil {
+		log.Println("Ошибка при отправке сообщения:", err)
+	}
 
 	fullForecast := fmt.Sprintf("%s \n\n%s \n\n%s", tempYar, tempBak, ratesstr)
 	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
