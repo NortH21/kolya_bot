@@ -422,7 +422,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case "/fucking-great-advice", "/fucking-great-advice" + usernameWithAt:
+				case "/fucking_great_advice", "/fucking_great_advice" + usernameWithAt:
 					fuckingGreatAdvice, err := getGreatAdvice()
 					if err != nil {
 						fmt.Println(err)
