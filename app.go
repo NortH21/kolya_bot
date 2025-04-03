@@ -114,7 +114,7 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма")
+	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, надо чтобы каждый день было разное сообщение.")
 	if fridayStr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -193,14 +193,14 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		log.Println("Ошибка при отправке сообщения:", err)
 	}
 
-	fullForecast := fmt.Sprintf("%s \n\n%s \n\n%s", tempYar, tempBak, ratesstr)
+	fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
 	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
 	_, err = bot.Send(forecast)
 	if err != nil {
 		log.Println(err)
 	}
 
-	gga, err := getGreatAdvice("latest")
+	gga, err := getGreatAdvice("random")
 	if err != nil {
 		fmt.Println(err)
 		return
