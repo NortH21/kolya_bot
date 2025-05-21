@@ -26,7 +26,7 @@ var (
 	reminderChatID      int64 = -1002039497735
 	// reminderChatID	int64 = 140450662
 	// testId			int64 = -1001194083056
-	meetUrl = "https://jitsi.sipleg.ru/spd"
+	meetUrl = "https://meet.sipleg.ru/spd"
 )
 
 var replyCountMap = make(map[int64]int)
