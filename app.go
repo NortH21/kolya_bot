@@ -396,6 +396,20 @@ func main() {
 						log.Println(err)
 					}
 					sendReply(bot, chatID, update.Message.MessageID, nostr)
+				case "норм", "у меня норм", "у меня нормально", "вроде норм":
+					if update.Message.Chat.UserName == "Ramil4ik" {
+						phrases := []string{
+							"Вау, у тебя-то всё норм? Надо же, а мы тут в глуши страдаем!",
+							"О, это очень помогло!",
+							"Спасибо, значит ты особенный!",
+							"Спасибо, Кэп!",
+							"Спасибо, что поделился! Теперь я спокоен.",
+						}
+						rand.Seed(time.Now().UnixNano())
+						randomIndex := rand.Intn(len(phrases))
+						randomPhrase := phrases[randomIndex]
+						sendReply(bot, chatID, update.Message.MessageID, randomPhrase)
+					}
 				case "/forecast", "/forecast" + usernameWithAt:
 					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
 					if err != nil {
