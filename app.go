@@ -20,7 +20,7 @@ var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
-	updateInterval            = 2 * time.Hour
+	updateInterval            = 3 * time.Hour
 	checkInterval             = 1 * time.Minute
 	reminderInterval          = 14 * time.Hour
 	reminderChatID      int64 = -1002039497735
@@ -66,7 +66,7 @@ func shouldSendReply(chatID int64) bool {
 
 func shouldSendReminder() bool {
 	currentTime := time.Now()
-	if currentTime.Hour() >= 10 && currentTime.Hour() <= 20 {
+	if currentTime.Hour() >= 11 && currentTime.Hour() <= 19 {
 		diff := currentTime.Sub(lastUpdateTime)
 		if diff >= updateInterval {
 			lastCheckTime, ok := lastReminderTimeMap[reminderChatID]
