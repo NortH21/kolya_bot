@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"fmt"
+	"log"
 )
 
 func getTemperature(city string) (int, int, int, int, error) {
@@ -58,3 +60,26 @@ func getTemperature(city string) (int, int, int, int, error) {
 		return int(curTemp), int(minTemp), int(avgTemp), int(maxTemp), err
 	}
 }
+
+func Forecast() (string, error) {
+	curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
+	if err != nil {
+		log.Println(err)
+	}
+
+	tempYar := fmt.Sprintf("В Ярославле сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
+		curTempYar, maxTempYar, avgTempYar, minTempYar)
+
+	curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
+	if err != nil {
+		log.Println(err)
+	}
+
+	tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
+		curTempBak, maxTempBak, avgTempBak, minTempBak)
+
+	fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
+
+	return fullForecast, nil
+}
+

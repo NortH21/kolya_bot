@@ -114,7 +114,7 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, надо чтобы каждый день было разное сообщение.")
+	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, пришли мне самый лучший вариант(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if fridayStr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -141,7 +141,7 @@ func shouldSendMorningGreetings(currentTime time.Time) bool {
 }
 
 func sendMorningGreetings(bot *tgbotapi.BotAPI) {
-	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, надо чтобы каждый день было разное сообщение.")
+	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if morningstr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -158,19 +158,10 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		log.Println("Ошибка при отправке сообщения:", err)
 	}
 
-	curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
+	fullForecast, err := Forecast()
 	if err != nil {
 		log.Println(err)
 	}
-	tempYar := fmt.Sprintf("В одном из старейших русских городов, основанном в XI веке и достигший своего расцвета в XVII веке, сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
-		curTempYar, maxTempYar, avgTempYar, minTempYar)
-
-	curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
-	if err != nil {
-		log.Println(err)
-	}
-	tempBak := fmt.Sprintf("На Апшеронском полуострове в городе Бога сегодня тоже прекрасная погода, сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
-		curTempBak, maxTempBak, avgTempBak, minTempBak)
 
 	rateUSD, err := getExchangeRates("USD")
 	if err != nil {
@@ -193,7 +184,6 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		log.Println("Ошибка при отправке сообщения:", err)
 	}
 
-	fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
 	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
 	_, err = bot.Send(forecast)
 	if err != nil {
@@ -411,23 +401,12 @@ func main() {
 						sendReply(bot, chatID, update.Message.MessageID, randomPhrase)
 					}
 				case "/forecast", "/forecast" + usernameWithAt:
-					curTempYar, minTempYar, avgTempYar, maxTempYar, err := getTemperature("Yaroslavl")
+					forecast, err := Forecast()
 					if err != nil {
 						log.Println(err)
 					}
-					tempYar := fmt.Sprintf("В Ярославле сейчас %d°C. Днем до %d°C, в среднем %d°C и ночью до %d°C.",
-						curTempYar, maxTempYar, avgTempYar, minTempYar)
 
-					curTempBak, minTempBak, avgTempBak, maxTempBak, err := getTemperature("Baku")
-					if err != nil {
-						log.Println(err)
-					}
-					tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
-						curTempBak, maxTempBak, avgTempBak, minTempBak)
-
-					fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
-
-					reply := tgbotapi.NewMessage(chatID, fullForecast)
+					reply := tgbotapi.NewMessage(chatID, forecast)
 					_, err = bot.Send(reply)
 					if err != nil {
 						log.Println(err)
