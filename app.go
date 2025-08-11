@@ -377,6 +377,8 @@ func main() {
 					sendReply(bot, chatID, update.Message.MessageID, "Хуинг")
 				case "+-", "±", "-+", "плюс минус":
 					sendReply(bot, chatID, update.Message.MessageID, "Ты определись нахуй")
+				case "А то", "А то!":
+					sendReply(bot, chatID, update.Message.MessageID, "А то что нахуй?")
 				case "/get_id", "/get_id" + usernameWithAt:
 					chatIDStr := strconv.FormatInt(chatID, 10)
 					sendReply(bot, chatID, update.Message.MessageID, chatIDStr)
