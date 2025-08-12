@@ -285,6 +285,22 @@ func main() {
 					}
 				}
 
+				patternYvn := `(?:^|\s)(ярцев|явн)(?:$|\s)`
+				reYvn := regexp.MustCompile(patternYvn)
+				matchYvn := reYvn.MatchString(text)
+
+				if matchYvn {
+					text := ("Самый лучший директор!")
+					reply := tgbotapi.NewMessage(chatID, text)
+					if bot.Debug {
+						log.Print(chatID, text)
+					}
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
 				if strings.HasPrefix(text, "/chat") {
 					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
 
