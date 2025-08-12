@@ -266,7 +266,8 @@ func main() {
 
 				text := strings.ToLower(update.Message.Text)
 
-				patternMeet := `(?:^|\s)(meet|мит|миит|миток|meeting|хуит|хуитинг)(?:$|\s)`
+				//patternMeet := `(?:^|\s)(meet|мит|миит|миток|meeting|хуит|хуитинг)(?:$|\s)`
+				patternMeet := `(?:^|\s)(meet|мит|миит|миток|meeting|хуит|хуитинг)\p{P}*(?:$|\s)`
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
 
@@ -285,7 +286,7 @@ func main() {
 					}
 				}
 
-				patternYvn := `(?:^|\s)(ярцев|явн)(?:$|\s)`
+				patternYvn := `(?:^|\s)(ярцев|явн)\p{P}*(?:$|\s)`
 				reYvn := regexp.MustCompile(patternYvn)
 				matchYvn := reYvn.MatchString(text)
 
