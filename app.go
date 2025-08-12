@@ -286,7 +286,7 @@ func main() {
 					}
 				}
 
-				patternYvn := `(?:^|\s)(ярцев|явн)\p{P}*(?:$|\s)`
+				patternYvn := `(?:^|\s)(ярцев|явн|уваров|усв|василич)\p{P}*(?:$|\s)`
 				reYvn := regexp.MustCompile(patternYvn)
 				matchYvn := reYvn.MatchString(text)
 
