@@ -286,12 +286,28 @@ func main() {
 					}
 				}
 
-				patternYvn := `(?:^|\s)(ярцев|явн|уваров|усв|василич)\p{P}*(?:$|\s)`
+				patternYvn := `(?:^|\s)(ярцев|явн)\p{P}*(?:$|\s)`
 				reYvn := regexp.MustCompile(patternYvn)
 				matchYvn := reYvn.MatchString(text)
 
 				if matchYvn {
 					text := ("Самый лучший директор!")
+					reply := tgbotapi.NewMessage(chatID, text)
+					if bot.Debug {
+						log.Print(chatID, text)
+					}
+					_, err = bot.Send(reply)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+
+				patternUsv := `(?:^|\s)(уваров|усв|василич)\p{P}*(?:$|\s)`
+				reUsv := regexp.MustCompile(patternUsv)
+				matchUsv := reUsv.MatchString(text)
+
+				if matchUsv {
+					text := ("Тоже самый лучший директор!")
 					reply := tgbotapi.NewMessage(chatID, text)
 					if bot.Debug {
 						log.Print(chatID, text)
