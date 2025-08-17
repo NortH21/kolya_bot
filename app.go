@@ -299,6 +299,7 @@ func handleMessage(ctx context.Context, b *bot.Bot, update *models.Update) {
 	switch text {
 	case "/get_id", "/get_id" + usernameWithAt:
 		chatIDStr := strconv.FormatInt(chatID, 10)
+		log.Println("chatIDStr: " + chatIDStr)
 		sendReply(ctx, b, chatID, replyToMessageID, chatIDStr)
 	case "неа", "не-а", "no", "не", "неа)", "не)", "отнюдь":
 		nostr, err := getRandomLineFromFile("./files/no.txt")
