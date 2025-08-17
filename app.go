@@ -318,61 +318,61 @@ func main() {
 					}
 				}
 
-				if strings.HasPrefix(text, "/chat") {
-					commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
+				// if strings.HasPrefix(text, "/chat") {
+				// 	commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
 
-					textResp := Chat(commandText)
+				// 	textResp := Chat(commandText)
 
-					if textResp == "" {
-						log.Println("Получен пустой текст от чата")
-					} else {
-						reply := tgbotapi.NewMessage(chatID, textResp)
-						reply.ParseMode = tgbotapi.ModeMarkdown
-						_, err := bot.Send(reply)
-						if err != nil {
-							log.Println(err)
-						}
-					}
-				}
+				// 	if textResp == "" {
+				// 		log.Println("Получен пустой текст от чата")
+				// 	} else {
+				// 		reply := tgbotapi.NewMessage(chatID, textResp)
+				// 		reply.ParseMode = tgbotapi.ModeMarkdown
+				// 		_, err := bot.Send(reply)
+				// 		if err != nil {
+				// 			log.Println(err)
+				// 		}
+				// 	}
+				// }
 
-				if strings.HasPrefix(text, "/img") {
-					go func() {
-						promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
+				// if strings.HasPrefix(text, "/img") {
+				// 	go func() {
+				// 		promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
 
-						if promt == "" {
-							log.Println("Нет промта, ничего не делаем")
-							reply := tgbotapi.NewMessage(chatID, "Нужно указать промт")
-							reply.ReplyToMessageID = replyToMessageID
-							_, err := bot.Send(reply)
-							if err != nil {
-								log.Println(err)
-							}
-						} else {
-							//chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
-							//reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
-							//reply.ParseMode = tgbotapi.ModeMarkdown
-							//_, err := bot.Send(reply)
-							//if err != nil {
-							//	log.Println(err)
-							//}
-							negativepromt := ""
+				// 		if promt == "" {
+				// 			log.Println("Нет промта, ничего не делаем")
+				// 			reply := tgbotapi.NewMessage(chatID, "Нужно указать промт")
+				// 			reply.ReplyToMessageID = replyToMessageID
+				// 			_, err := bot.Send(reply)
+				// 			if err != nil {
+				// 				log.Println(err)
+				// 			}
+				// 		} else {
+				// 			//chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
+				// 			//reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
+				// 			//reply.ParseMode = tgbotapi.ModeMarkdown
+				// 			//_, err := bot.Send(reply)
+				// 			//if err != nil {
+				// 			//	log.Println(err)
+				// 			//}
+				// 			negativepromt := ""
 
-							fileName, err := getImage(promt, negativepromt)
-							if err != nil {
-								log.Println(err)
-							}
+				// 			fileName, err := getImage(promt, negativepromt)
+				// 			if err != nil {
+				// 				log.Println(err)
+				// 			}
 
-							if fileName == "" {
-								log.Println("Картинка не вернулась")
-							} else {
-								photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
-								if _, err = bot.Send(photo); err != nil {
-									log.Println(err)
-								}
-							}
-						}
-					}()
-				}
+				// 			if fileName == "" {
+				// 				log.Println("Картинка не вернулась")
+				// 			} else {
+				// 				photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
+				// 				if _, err = bot.Send(photo); err != nil {
+				// 					log.Println(err)
+				// 				}
+				// 			}
+				// 		}
+				// 	}()
+				// }
 
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 

@@ -84,31 +84,31 @@ spec:
           requests:
             cpu: "0.5"
             memory: "256Mi"
-      - name: ddg-chat
-        image: leafmoes/ddg-chat:latest
-        ports:
-        - containerPort: 8787
-        livenessProbe:
-          httpGet:
-            path: /ping
-            port: 8787
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ping
-            port: 8787
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 3
-        resources:
-          limits:
-            cpu: "1"
-            memory: "512Mi"
-          requests:
-            cpu: "0.5"
-            memory: "256Mi"
+      # - name: ddg-chat
+      #   image: leafmoes/ddg-chat:latest
+      #   ports:
+      #   - containerPort: 8787
+      #   livenessProbe:
+      #     httpGet:
+      #       path: /ping
+      #       port: 8787
+      #     initialDelaySeconds: 30
+      #     periodSeconds: 10
+      #     failureThreshold: 3
+      #   readinessProbe:
+      #     httpGet:
+      #       path: /ping
+      #       port: 8787
+      #     initialDelaySeconds: 5
+      #     periodSeconds: 5
+      #     failureThreshold: 3
+      #   resources:
+      #     limits:
+      #       cpu: "1"
+      #       memory: "512Mi"
+      #     requests:
+      #       cpu: "0.5"
+      #       memory: "256Mi"
       volumes:
       - name: kolya-bot-storage
         emptyDir: {}
