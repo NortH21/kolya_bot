@@ -351,12 +351,7 @@ func handleMessage(ctx context.Context, b *bot.Bot, update *models.Update) {
 		}
 		sendText(ctx, b, chatID, fuckingGreatAdvice)
 	case usernameWithAt:
-		ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
-		if err != nil {
-			log.Println(err)
-		} else {
-			sendText(ctx, b, chatID, ukrf)
-		}
+		sendText(ctx, b, chatID, "Аа, ты меня звал? Я тут.")
 	}
 }
 
