@@ -73,10 +73,10 @@ spec:
               secretKeyRef:
                 name: fusionbrain
                 key: secret
-          - name: CHAT_URL
-            value: "ddg-chat.kolya-bot.svc.cluster.local:8787"
-          - name: MODEL
-            value: "gpt-4o-mini"
+          # - name: CHAT_URL
+          #   value: "ddg-chat.kolya-bot.svc.cluster.local:8787"
+          # - name: MODEL
+          #   value: "gpt-4o-mini"
         resources:
           limits:
             cpu: "1"
@@ -112,16 +112,16 @@ spec:
       volumes:
       - name: kolya-bot-storage
         emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ddg-chat
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8787
-      targetPort: 8787
-  selector:
-    app: kolya-bot
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: ddg-chat
+# spec:
+#   type: ClusterIP
+#   ports:
+#     - port: 8787
+#       targetPort: 8787
+#   selector:
+#     app: kolya-bot
 
