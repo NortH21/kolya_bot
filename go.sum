@@ -6,6 +6,8 @@ github.com/dm1trypon/go-fusionbrain-api v1.0.2 h1:COQse9qu50fsarjCC0hAmA1DLzCbVg
 github.com/dm1trypon/go-fusionbrain-api v1.0.2/go.mod h1:Iqx3LxOWGWg9y+N6KjJXYU4sQ3BEt8+bo+LckvgNBqQ=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.2-0.20221020003057-99503a71186f h1:s4aF4gKdCrJGRBWW8mUHIzjQ3PClFfZYA7gfH++aJ+E=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.2-0.20221020003057-99503a71186f/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
+github.com/go-telegram/bot v1.16.0 h1:s6aDgM9whapccMD70gt27BPG3E7R8a6FaWw+8UsRYog=
+github.com/go-telegram/bot v1.16.0/go.mod h1:i2TRs7fXWIeaceF3z7KzsMt/he0TwkVC680mvdTFYeM=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/klauspost/compress v1.17.6 h1:60eq2E/jlfwQXtvZEeBUYADs+BwKBWURIY+Gj2eRGjI=
