@@ -22,11 +22,11 @@ var (
 	lastReplyTimeMap    map[int64]time.Time
 	lastReminderTimeMap map[int64]time.Time
 	lastUpdateTime      time.Time
-	updateInterval            = 3 * time.Hour
-	checkInterval             = 1 * time.Minute
-	reminderInterval          = 14 * time.Hour
+	updateInterval      = 3 * time.Hour
+	checkInterval       = 1 * time.Minute
+	reminderInterval    = 14 * time.Hour
 	//reminderChatID      int64 = -1002039497735
-	reminderChatID	int64 = 140450662
+	reminderChatID int64 = 140450662
 	// testId			int64 = -1001194083056
 	meetUrl = "https://meet.sipleg.ru/spd"
 )
@@ -246,9 +246,15 @@ func handleMessage(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 	chatID := update.Message.Chat.ID
-	replyToMessageID := update.Message.MessageID
+	replyToMessageID := update.Message.ID
 	text := strings.ToLower(update.Message.Text)
-	usernameWithAt := strings.ToLower("@" + b.Me.Username)
+
+	me, err := b.GetMe(ctx)
+	if err != nil {
+		log.Println("Ошибка получения информации о боте:", err)
+		return
+	}
+	usernameWithAt := strings.ToLower("@" + me.Username)
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -325,7 +331,7 @@ func handleMessage(ctx context.Context, b *bot.Bot, update *models.Update) {
 		}
 		sendReply(ctx, b, chatID, replyToMessageID, nostr)
 	case "норм", "у меня норм", "у меня нормально", "вроде норм":
-		if update.Message.Chat.UserName == "Ramil4ik" {
+		if update.Message.Chat.Username == "Ramil4ik" {
 			phrases := []string{
 				"Вау, у тебя-то всё норм? Надо же, а мы тут в глуши страдаем!",
 				"О, это очень помогло!",
