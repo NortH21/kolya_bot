@@ -9,6 +9,7 @@ require github.com/anatoliyfedorenko/isdayoff v1.0.2
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/dm1trypon/go-fusionbrain-api v1.0.2 // indirect
+	github.com/go-telegram/bot v1.16.0
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
