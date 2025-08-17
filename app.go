@@ -25,8 +25,8 @@ var (
 	updateInterval      = 3 * time.Hour
 	checkInterval       = 1 * time.Minute
 	reminderInterval    = 14 * time.Hour
-	//reminderChatID      int64 = -1002039497735
-	reminderChatID int64 = 140450662
+	reminderChatID      int64 = -1002039497735
+	//reminderChatID int64 = 140450662
 	// testId			int64 = -1001194083056
 	meetUrl = "https://meet.sipleg.ru/spd"
 )
@@ -120,19 +120,13 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(ctx context.Context, b *bot.Bot) {
-	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, пришли мне самый лучший вариант(только сам текст), надо чтобы каждый день было разное сообщение.")
-	if fridayStr == "" {
-		log.Println("Получен пустой текст от чата")
-
-		var err error
-		fridayStr, err = getRandomLineFromFile("./files/friday.txt")
-		if err != nil {
-			log.Println("Ошибка при получении строки из файла:", err)
-			return
-		}
+	fridayStr, err := getRandomLineFromFile("./files/friday.txt")
+	if err != nil {
+		log.Println("Ошибка при получении строки из файла:", err)
+		return
 	}
 
-	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: reminderChatID,
 		Text:   fridayStr,
 	})
@@ -141,28 +135,14 @@ func sendFridayGreetings(ctx context.Context, b *bot.Bot) {
 	}
 }
 
-func shouldSendMorningGreetings(currentTime time.Time) bool {
-	isSummerTime := currentTime.Month() >= time.April && currentTime.Month() <= time.August
-	isSevenAM := currentTime.Hour() == 7 && currentTime.Minute() == 0
-	isEightAM := currentTime.Hour() == 8 && currentTime.Minute() == 0
-
-	return (isSummerTime && isSevenAM) || (!isSummerTime && isEightAM)
-}
-
 func sendMorningGreetings(ctx context.Context, b *bot.Bot) {
-	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
-	if morningstr == "" {
-		log.Println("Получен пустой текст от чата")
-
-		var err error
-		morningstr, err = getRandomLineFromFile("./files/morning.txt")
-		if err != nil {
-			log.Println("Ошибка при получении строки из файла:", err)
-			return
-		}
+	morningstr, err := getRandomLineFromFile("./files/morning.txt")
+	if err != nil {
+		log.Println("Ошибка при получении строки из файла:", err)
+		return
 	}
 
-	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: reminderChatID,
 		Text:   morningstr,
 	})
@@ -221,6 +201,14 @@ func sendMorningGreetings(ctx context.Context, b *bot.Bot) {
 	if err != nil {
 		log.Println("Ошибка при отправке сообщения:", err)
 	}
+}
+
+func shouldSendMorningGreetings(currentTime time.Time) bool {
+	isSummerTime := currentTime.Month() >= time.April && currentTime.Month() <= time.August
+	isSevenAM := currentTime.Hour() == 7 && currentTime.Minute() == 0
+	isEightAM := currentTime.Hour() == 8 && currentTime.Minute() == 0
+
+	return (isSummerTime && isSevenAM) || (!isSummerTime && isEightAM)
 }
 
 func sendReply(ctx context.Context, b *bot.Bot, chatID int64, replyToMessageID int, text string) {
