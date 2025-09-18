@@ -286,35 +286,34 @@ func main() {
 					}
 				}
 
-				patternYvn := `(?:^|\s)(ярцев|явн)\p{P}*(?:$|\s)`
-				reYvn := regexp.MustCompile(patternYvn)
-				matchYvn := reYvn.MatchString(text)
-
-				if matchYvn {
-					text := ("Самый лучший директор!")
-					reply := tgbotapi.NewMessage(chatID, text)
-					if bot.Debug {
-						log.Print(chatID, text)
-					}
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
-					}
+				type patternReply struct {
+					pattern string
+					reply   string
 				}
 
-				patternUsv := `(?:^|\s)(уваров|усв|василич)\p{P}*(?:$|\s)`
-				reUsv := regexp.MustCompile(patternUsv)
-				matchUsv := reUsv.MatchString(text)
+				patterns := []patternReply{
+					{`(?:^|\s)(ярцев|явн)\p{P}*(?:$|\s)`, "Самый лучший директор!"},
+					{`(?:^|\s)(уваров|усв|василич)\p{P}*(?:$|\s)`, "Тоже самый лучший директор!"},
+					{`(?:^|\s)(нюанс)\p{P}*(?:$|\s)`, `Подходит Петька к Василиванычу и спрашивает
+					Василиваныч что такое НЮАНС
+					Василивааныч и говорит
+					снимай Петька штаны
+					Петька снял ...
+					Василиваныч достает хуй и сует Петьке в жопу...
+					Вот смотри Петька у тебя хуй в жопе ..... и у меня хуй в жопе. Но есть один нюанс!`},
+				}
 
-				if matchUsv {
-					text := ("Тоже самый лучший директор!")
-					reply := tgbotapi.NewMessage(chatID, text)
-					if bot.Debug {
-						log.Print(chatID, text)
-					}
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
+				for _, pr := range patterns {
+					re := regexp.MustCompile(pr.pattern)
+					if re.MatchString(text) {
+						reply := tgbotapi.NewMessage(chatID, pr.reply)
+						if bot.Debug {
+							log.Print(chatID, pr.reply)
+						}
+						_, err = bot.Send(reply)
+						if err != nil {
+							log.Println(err)
+						}
 					}
 				}
 
