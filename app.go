@@ -114,7 +114,8 @@ func getRandomLineFromFile(filename string) (string, error) {
 }
 
 func sendFridayGreetings(bot *tgbotapi.BotAPI) {
-	fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, пришли мне самый лучший вариант(только сам текст), надо чтобы каждый день было разное сообщение.")
+	fridayStr := ""
+	//fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, пришли мне самый лучший вариант(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if fridayStr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -141,7 +142,8 @@ func shouldSendMorningGreetings(currentTime time.Time) bool {
 }
 
 func sendMorningGreetings(bot *tgbotapi.BotAPI) {
-	morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
+	morningstr := ""
+	//morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if morningstr == "" {
 		log.Println("Получен пустой текст от чата")
 		
@@ -262,7 +264,7 @@ func main() {
 				}
 
 				chatID := update.Message.Chat.ID
-				replyToMessageID := update.Message.MessageID
+				//replyToMessageID := update.Message.MessageID
 
 				text := strings.ToLower(update.Message.Text)
 
