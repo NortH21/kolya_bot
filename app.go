@@ -385,6 +385,8 @@ func main() {
 					sendReply(bot, chatID, update.Message.MessageID, "Манда")
 				case "нет", "нет)", "нет!":
 					sendReply(bot, chatID, update.Message.MessageID, "Пидора ответ")
+				case "ну нет", "ну нет)", "ну нет!", "ну, нет":
+					sendReply(bot, chatID, update.Message.MessageID, "Ну пидора ответ")
 				case "a", "а", "a)", "а)", "а!":
 					sendReply(bot, chatID, update.Message.MessageID, "Хуй на)")
 				case "ну да", "ну, да", "ну да)", "ну, да)", "ну, да!":
