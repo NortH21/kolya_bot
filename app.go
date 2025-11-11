@@ -12,7 +12,7 @@ import (
 	"time"
 	_ "time/tzdata"
 
-	"github.com/anatoliyfedorenko/isdayoff"
+	"github.com/kotopheiop/isdayoff"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 

@@ -5,9 +5,9 @@ go 1.25
 require github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.2-0.20221020003057-99503a71186f
 
 require (
-	github.com/anatoliyfedorenko/isdayoff v1.0.2
 	github.com/dm1trypon/go-fusionbrain-api v1.0.2
 	github.com/google/uuid v1.6.0
+	github.com/kotopheiop/isdayoff v1.0.0
 	github.com/valyala/fasthttp v1.52.0
 )
 

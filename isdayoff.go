@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anatoliyfedorenko/isdayoff"
+	"github.com/kotopheiop/isdayoff"
 )
 
 type WorkdayInfo struct {
