@@ -198,7 +198,14 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		return
 	}
 
-	messageText := "Совет дня, посоны: " + gga
+	var messageText string
+
+	if gga == "" {
+		messageText = "Совета не будет сегодня, посоны. Как нибудь сами разберётесь."
+	} else {
+		messageText = "Совет дня, посоны: " + gga
+	}
+
 	ggam := tgbotapi.NewMessage(reminderChatID, messageText)
 	if _, err := bot.Send(ggam); err != nil {
 		log.Println("Ошибка при отправке сообщения:", err)
