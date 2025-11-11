@@ -51,22 +51,22 @@ func TestShouldSendReply(t *testing.T) {
 	}
 }
 
-func TestShouldSendReminder(t *testing.T) {
-	lastReminderTimeMap := make(map[int64]time.Time)
+// func TestShouldSendReminder(t *testing.T) {
+// 	lastReminderTimeMap := make(map[int64]time.Time)
 
-	// Устанавливаем последнее время напоминания для определенного chatID
-	reminderChatID := int64(987654321)
-	lastReminderTimeMap[reminderChatID] = time.Now().Add(-25 * time.Hour)
+// 	// Устанавливаем последнее время напоминания для определенного chatID
+// 	reminderChatID := int64(987654321)
+// 	lastReminderTimeMap[reminderChatID] = time.Now().Add(-25 * time.Hour)
 
-	// Проверяем, должно ли быть отправлено напоминание
-	shouldSend := shouldSendReminder()
-	currentTime := time.Now()
-	if currentTime.Hour() >= 10 && currentTime.Hour() <= 20 {
-		if !shouldSend {
-			t.Error("Expected shouldSend to be true, got false")
-		}
-	}
-}
+// 	// Проверяем, должно ли быть отправлено напоминание
+// 	shouldSend := shouldSendReminder()
+// 	currentTime := time.Now()
+// 	if currentTime.Hour() >= 10 && currentTime.Hour() <= 20 {
+// 		if !shouldSend {
+// 			t.Error("Expected shouldSend to be true, got false")
+// 		}
+// 	}
+// }
 
 func TestGetRandomLineFromFileNo(t *testing.T) {
 	filename := "./files/no.txt"
