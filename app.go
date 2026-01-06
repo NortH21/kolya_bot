@@ -34,6 +34,44 @@ var replyCountMap = make(map[int64]int)
 const maxReplies = 3
 const replyInterval = 35 * time.Minute
 
+type Birthday struct {
+    Username string
+    Month    int
+    Day      int
+}
+
+var birthdays = []Birthday{
+    {Username: "@avchuvaldin", Month: 12, Day: 11},
+    {Username: "@ivanko_sh", Month: 12, Day: 9},
+	{Username: "@glebasta_speil", Month: 11, Day: 27},
+	{Username: "@Hero_of_Comix", Month: 10, Day: 4},
+	{Username: "@this_is_90sms", Month: 9, Day: 7},
+	{Username: "@aleksandr_kralin", Month: 9, Day: 3},
+	{Username: "@Воробьев", Month: 7, Day: 24}, // Любит рамблер, нет username
+	{Username: "@Ramil4ik", Month: 6, Day: 6},
+	{Username: "@Novo_Alex", Month: 4, Day: 19},
+	{Username: "@fly123", Month: 1, Day: 4}, // Тоже любит рамблер походу
+	{Username: "@nvinogradov", Month: 1, Day: 9},
+}
+
+func checkBirthdays(bot *tgbotapi.BotAPI) {
+    now := time.Now()
+    
+    for _, birthday := range birthdays {
+        if int(now.Month()) == birthday.Month && now.Day() == birthday.Day {
+            text := fmt.Sprintf("🎉 %s, котик, с днём рождения! 🎂", birthday.Username)
+            
+            msg := tgbotapi.NewMessage(reminderChatID, text)
+            if _, err := bot.Send(msg); err != nil {
+                log.Printf("Ошибка отправки поздравления для %s: %v", birthday.Username, err)
+                continue
+            }
+            
+            log.Printf("Поздравление отправлено для %s", birthday.Username)
+        }
+    }
+}
+
 func isLastDayOfMonth(date time.Time) bool {
 	nextDay := date.AddDate(0, 0, 1)
 	return nextDay.Month() != date.Month()
@@ -271,17 +309,12 @@ func main() {
 				}
 
 				chatID := update.Message.Chat.ID
-				//replyToMessageID := update.Message.MessageID
 
 				text := strings.ToLower(update.Message.Text)
 
-				//patternMeet := `(?:^|\s)(meet|мит|миит|миток|meeting|хуит|хуитинг)(?:$|\s)`
 				patternMeet := `(?:^|\s)(meet|мит|миит|миток|meeting|хуит|хуитинг)\p{P}*(?:$|\s)`
 				reMeet := regexp.MustCompile(patternMeet)
 				matchMeet := reMeet.MatchString(text)
-
-				// typingMessage := tgbotapi.NewChatAction(chatID, tgbotapi.ChatTyping)
-				// bot.Send(typingMessage)
 
 				if matchMeet {
 					text := ("Го, я создал " + meetUrl)
@@ -325,62 +358,6 @@ func main() {
 						}
 					}
 				}
-
-				// if strings.HasPrefix(text, "/chat") {
-				// 	commandText := strings.TrimSpace(strings.TrimPrefix(text, "/chat"))
-
-				// 	textResp := Chat(commandText)
-
-				// 	if textResp == "" {
-				// 		log.Println("Получен пустой текст от чата")
-				// 	} else {
-				// 		reply := tgbotapi.NewMessage(chatID, textResp)
-				// 		reply.ParseMode = tgbotapi.ModeMarkdown
-				// 		_, err := bot.Send(reply)
-				// 		if err != nil {
-				// 			log.Println(err)
-				// 		}
-				// 	}
-				// }
-
-				// if strings.HasPrefix(text, "/img") {
-				// 	go func() {
-				// 		promt := strings.TrimSpace(strings.TrimPrefix(text, "/img"))
-
-				// 		if promt == "" {
-				// 			log.Println("Нет промта, ничего не делаем")
-				// 			reply := tgbotapi.NewMessage(chatID, "Нужно указать промт")
-				// 			reply.ReplyToMessageID = replyToMessageID
-				// 			_, err := bot.Send(reply)
-				// 			if err != nil {
-				// 				log.Println(err)
-				// 			}
-				// 		} else {
-				// 			//chat_reply := Chat("нахально подстегни кореша чтобы она нарисовал картинку, 1 вариант")
-				// 			//reply := tgbotapi.NewMessage(chatID, "@Ramil4ik " + chat_reply)
-				// 			//reply.ParseMode = tgbotapi.ModeMarkdown
-				// 			//_, err := bot.Send(reply)
-				// 			//if err != nil {
-				// 			//	log.Println(err)
-				// 			//}
-				// 			negativepromt := ""
-
-				// 			fileName, err := getImage(promt, negativepromt)
-				// 			if err != nil {
-				// 				log.Println(err)
-				// 			}
-
-				// 			if fileName == "" {
-				// 				log.Println("Картинка не вернулась")
-				// 			} else {
-				// 				photo := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(fileName))
-				// 				if _, err = bot.Send(photo); err != nil {
-				// 					log.Println(err)
-				// 				}
-				// 			}
-				// 		}
-				// 	}()
-				// }
 
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
 
@@ -552,6 +529,17 @@ func main() {
 			currentTime := time.Now()
 			if isLastDayOfMonth(currentTime) && currentTime.Hour() == 12 && currentTime.Minute() == 0 {
 				sendLastDayOfMonth(bot)
+			}
+			time.Sleep(checkInterval)
+		}
+	}()
+
+	// Birthday loop
+	go func() {
+		for {
+			currentTime := time.Now()
+			if currentTime.Hour() == 8 && currentTime.Minute() == 0 {
+				checkBirthdays(bot)
 			}
 			time.Sleep(checkInterval)
 		}
