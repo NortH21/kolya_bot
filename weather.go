@@ -78,7 +78,7 @@ func Forecast() (string, error) {
 	tempBak := fmt.Sprintf("В Баку сейчас %d°C. Днем до %d°C, в среднем %d°C, ночью до %d°C.",
 		curTempBak, maxTempBak, avgTempBak, minTempBak)
 
-	fullForecast := fmt.Sprintf("%s \n\n%s", tempYar, tempBak)
+	fullForecast := fmt.Sprintf("%s \n%s", tempYar, tempBak)
 
 	return fullForecast, nil
 }
