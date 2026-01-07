@@ -468,20 +468,6 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				case usernameWithAt:
-					// Список статей
-					ukrf, err := getRandomLineFromFile("./files/ukrf.txt")
-					if err != nil {
-						log.Println(err)
-					}
-					reply := tgbotapi.NewMessage(chatID, ukrf)
-					if bot.Debug {
-						log.Print(chatID, ukrf)
-					}
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
-					}
 				}
 			}
 		}
