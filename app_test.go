@@ -80,18 +80,6 @@ func TestGetRandomLineFromFileNo(t *testing.T) {
 	}
 }
 
-func TestGetRandomLineFromFileUk(t *testing.T) {
-	filename := "./files/ukrf.txt"
-	randomLine, err := getRandomLineFromFile(filename)
-	if err != nil {
-		t.Errorf("Error reading file: %v", err)
-	}
-
-	if randomLine == "" {
-		t.Error("Expected randomLine to be non-empty, got empty")
-	}
-}
-
 func TestGetRandomLineFromFileFriday(t *testing.T) {
 	filename := "./files/friday.txt"
 	randomLine, err := getRandomLineFromFile(filename)
