@@ -524,7 +524,7 @@ func main() {
 	go func() {
 		for {
 			currentTime := time.Now()
-			if currentTime.Hour() == 8 && currentTime.Minute() == 0 {
+			if currentTime.Hour() == 8 && currentTime.Minute() == 5 {
 				checkBirthdays(bot)
 			}
 			time.Sleep(checkInterval)
