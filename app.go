@@ -239,9 +239,9 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	var messageText string
 
 	if gga == "" {
-		messageText = "Совета не будет сегодня, посоны. Как нибудь сами разберётесь."
+		messageText = "Совета дня сегодня не будет, посоны. Как нибудь сами разберётесь."
 	} else {
-		messageText = "Ребят, " + gga
+		messageText = "Котик, " + strings.ToLower(gga)
 	}
 
 	ggam := tgbotapi.NewMessage(reminderChatID, messageText)
