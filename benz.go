@@ -143,15 +143,38 @@ func selectBestStation(stations []nearbyStation) nearbyStation {
 	return nearbyStation{}
 }
 
-func formatNearbyStationMessage(station nearbyStation) string {
+func formatFuelText(station nearbyStation) string {
 	fuelText := strings.TrimSpace(station.FuelsNow)
-	if fuelText == "" {
-		fuelText = station.Status
-	}
-	if fuelText == "" {
-		fuelText = "данные о наличии бензина отсутствуют"
+	if fuelText != "" {
+		return fuelText
 	}
 
+	status := strings.ToLower(strings.TrimSpace(station.Status))
+	if status == "yes" {
+		fuelText = strings.TrimSpace(station.Detail)
+		if fuelText != "" {
+			return fuelText
+		}
+		return "есть"
+	}
+	if status == "queue" {
+		fuelText = strings.TrimSpace(station.Detail)
+		if fuelText != "" {
+			return fmt.Sprintf("в очереди: %s", fuelText)
+		}
+		return "в очереди"
+	}
+	if status == "no" {
+		return "нет данных"
+	}
+
+	if strings.TrimSpace(station.Detail) != "" {
+		return station.Detail
+	}
+	return "нет данных"
+}
+
+func formatNearbyStationMessage(station nearbyStation) string {
 	address := strings.TrimSpace(station.Addr)
 	if address == "" {
 		address = "адрес не указан"
@@ -172,7 +195,15 @@ func formatNearbyStationMessage(station nearbyStation) string {
 		stationName = "заправка"
 	}
 
-	return fmt.Sprintf("Ближайшая заправка: %s\nАдрес: %s\nБензин: %s\nОбновлено: %s", stationName, address, fuelText, lastUpdate)
+	fuelText := formatFuelText(station)
+	statusEmoji := "⛽"
+	if strings.Contains(strings.ToLower(fuelText), "очеред") || strings.Contains(strings.ToLower(fuelText), "queue") {
+		statusEmoji = "🕒"
+	} else if strings.Contains(strings.ToLower(fuelText), "нет") || strings.Contains(strings.ToLower(fuelText), "нет данных") {
+		statusEmoji = "⚠️"
+	}
+
+	return fmt.Sprintf("%s Ближайшая заправка: %s\n📍 Адрес: %s\n%s Бензин: %s\n🕒 Обновлено: %s", statusEmoji, stationName, address, statusEmoji, fuelText, lastUpdate)
 }
 
 func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon float64, radiusKm int) {
