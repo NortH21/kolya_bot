@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"strconv"
 	"strings"
@@ -47,22 +48,99 @@ func fetchNearbyGasStations(lat, lon float64, radiusKm int) ([]nearbyStation, er
 	params.Set("lon", strconv.FormatFloat(lon, 'f', -1, 64))
 	params.Set("radius_km", strconv.Itoa(radiusKm))
 
-	resp, err := http.Get(benzAPIBaseURL + "?" + params.Encode())
+	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	client := &http.Client{
+		Jar:     jar,
+		Timeout: 10 * time.Second,
 	}
 
-	var payload nearbyResponse
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return nil, err
+	var lastErr error
+	for attempt := 1; attempt <= 3; attempt++ {
+		req, err := http.NewRequest(http.MethodGet, benzAPIBaseURL+"?"+params.Encode(), nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+		req.Header.Set("Accept", "application/json, text/plain, */*")
+		req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+		req.Header.Set("Referer", "https://www.gdebenz.ru/")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = err
+			if attempt < 3 {
+				time.Sleep(500 * time.Millisecond)
+				continue
+			}
+			return nil, err
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			defer resp.Body.Close()
+			var payload nearbyResponse
+			if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+				if attempt < 3 {
+					time.Sleep(500 * time.Millisecond)
+					continue
+				}
+				return nil, err
+			}
+			return payload.Stations, nil
+		}
+
+		defer resp.Body.Close()
+		lastErr = fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		if attempt < 3 {
+			time.Sleep(500 * time.Millisecond)
+			continue
+		}
 	}
 
-	return payload.Stations, nil
+	return nil, lastErr
+}
+
+func hasFuelAvailable(station nearbyStation) bool {
+	status := strings.ToLower(strings.TrimSpace(station.Status))
+	if status == "yes" {
+		return true
+	}
+	if status == "queue" {
+		return true
+	}
+	if status == "no" {
+		return false
+	}
+	return strings.TrimSpace(station.FuelsNow) != ""
+}
+
+func selectBestStation(stations []nearbyStation) nearbyStation {
+	var best nearbyStation
+	bestFound := false
+	var bestFuelCandidate nearbyStation
+	bestFuelFound := false
+
+	for _, station := range stations {
+		if !bestFound || station.DistanceKm < best.DistanceKm {
+			best = station
+			bestFound = true
+		}
+		if hasFuelAvailable(station) && (!bestFuelFound || station.DistanceKm < bestFuelCandidate.DistanceKm) {
+			bestFuelCandidate = station
+			bestFuelFound = true
+		}
+	}
+
+	if bestFuelFound {
+		return bestFuelCandidate
+	}
+	if bestFound {
+		return best
+	}
+	return nearbyStation{}
 }
 
 func formatNearbyStationMessage(station nearbyStation) string {
@@ -112,7 +190,8 @@ func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon flo
 		return
 	}
 
-	msg := tgbotapi.NewMessage(chatID, formatNearbyStationMessage(stations[0]))
+	selectedStation := selectBestStation(stations)
+	msg := tgbotapi.NewMessage(chatID, formatNearbyStationMessage(selectedStation))
 	_, _ = bot.Send(msg)
 }
 
