@@ -197,22 +197,40 @@ func formatNearbyStationMessage(station nearbyStation) string {
 
 	fuelText := formatFuelText(station)
 	statusEmoji := "⛽"
+	statusLabel := ""
 	if strings.Contains(strings.ToLower(fuelText), "очеред") || strings.Contains(strings.ToLower(fuelText), "queue") {
 		statusEmoji = "🕒"
+		statusLabel = " (в очереди)"
 	} else if strings.Contains(strings.ToLower(fuelText), "нет") || strings.Contains(strings.ToLower(fuelText), "нет данных") {
 		statusEmoji = "⚠️"
 	}
 
-	return fmt.Sprintf("Заправка: %s\n📍 Адрес: %s\n%s Бензин: %s\n🕒 Обновлено: %s", stationName, address, statusEmoji, fuelText, lastUpdate)
+	return fmt.Sprintf("Заправка: %s%s\n📍 Адрес: %s\n%s Бензин: %s\n🕒 Обновлено: %s", stationName, statusLabel, address, statusEmoji, fuelText, lastUpdate)
+}
+
+func filterStationsForList(stations []nearbyStation) []nearbyStation {
+	var filtered []nearbyStation
+
+	for _, station := range stations {
+		fuelText := strings.TrimSpace(station.FuelsNow)
+		detailText := strings.TrimSpace(station.Detail)
+		status := strings.ToLower(strings.TrimSpace(station.Status))
+		if fuelText != "" || detailText != "" || status == "yes" || status == "queue" {
+			filtered = append(filtered, station)
+		}
+	}
+
+	return filtered
 }
 
 func formatNearbyStationList(stations []nearbyStation) string {
-	if len(stations) == 0 {
+	filtered := filterStationsForList(stations)
+	if len(filtered) == 0 {
 		return "Пока нет данных по ближайшим заправкам."
 	}
 
 	lines := []string{"Найдены заправки:"}
-	for i, station := range stations {
+	for i, station := range filtered {
 		if i >= 5 {
 			break
 		}
@@ -228,6 +246,9 @@ func formatNearbyStationList(stations []nearbyStation) string {
 			address = "адрес не указан"
 		}
 		fuelText := formatFuelText(station)
+		if strings.Contains(strings.ToLower(fuelText), "очеред") || strings.Contains(strings.ToLower(fuelText), "queue") {
+			fuelText = fmt.Sprintf("%s (в очереди)", fuelText)
+		}
 		lines = append(lines, fmt.Sprintf("%d. %s — %s — %s", i+1, stationName, address, fuelText))
 	}
 	return strings.Join(lines, "\n")
@@ -243,7 +264,7 @@ func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon flo
 	}
 
 	if len(stations) == 0 {
-		msg := tgbotapi.NewMessage(chatID, "Рядом нет заправок с доступным бензином.")
+		msg := tgbotapi.NewMessage(chatID, "Рядом нет заправок с доступным бензином или очередью.")
 		_, _ = bot.Send(msg)
 		return
 	}
