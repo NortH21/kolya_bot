@@ -12,8 +12,8 @@ import (
 	"time"
 	_ "time/tzdata"
 
-	"github.com/kotopheiop/isdayoff"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kotopheiop/isdayoff"
 )
 
 var (
@@ -35,14 +35,14 @@ const maxReplies = 3
 const replyInterval = 35 * time.Minute
 
 type Birthday struct {
-    Username string
-    Month    int
-    Day      int
+	Username string
+	Month    int
+	Day      int
 }
 
 var birthdays = []Birthday{
-    {Username: "@avchuvaldin", Month: 12, Day: 11},
-    {Username: "@ivanko_sh", Month: 12, Day: 9},
+	{Username: "@avchuvaldin", Month: 12, Day: 11},
+	{Username: "@ivanko_sh", Month: 12, Day: 9},
 	{Username: "@glebasta_speil", Month: 11, Day: 27},
 	{Username: "@Hero_of_Comix", Month: 10, Day: 4},
 	{Username: "@this_is_90sms", Month: 9, Day: 7},
@@ -55,21 +55,21 @@ var birthdays = []Birthday{
 }
 
 func checkBirthdays(bot *tgbotapi.BotAPI) {
-    now := time.Now()
-    
-    for _, birthday := range birthdays {
-        if int(now.Month()) == birthday.Month && now.Day() == birthday.Day {
-            text := fmt.Sprintf("🎉 %s, котик, с днём рождения! 🎂", birthday.Username)
-            
-            msg := tgbotapi.NewMessage(reminderChatID, text)
-            if _, err := bot.Send(msg); err != nil {
-                log.Printf("Ошибка отправки поздравления для %s: %v", birthday.Username, err)
-                continue
-            }
-            
-            log.Printf("Поздравление отправлено для %s", birthday.Username)
-        }
-    }
+	now := time.Now()
+
+	for _, birthday := range birthdays {
+		if int(now.Month()) == birthday.Month && now.Day() == birthday.Day {
+			text := fmt.Sprintf("🎉 %s, котик, с днём рождения! 🎂", birthday.Username)
+
+			msg := tgbotapi.NewMessage(reminderChatID, text)
+			if _, err := bot.Send(msg); err != nil {
+				log.Printf("Ошибка отправки поздравления для %s: %v", birthday.Username, err)
+				continue
+			}
+
+			log.Printf("Поздравление отправлено для %s", birthday.Username)
+		}
+	}
 }
 
 func isLastDayOfMonth(date time.Time) bool {
@@ -156,7 +156,7 @@ func sendFridayGreetings(bot *tgbotapi.BotAPI) {
 	//fridayStr := Chat("поздравь коллег с окончанием рабочей недели и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, пришли мне самый лучший вариант(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if fridayStr == "" {
 		log.Println("Получен пустой текст от чата")
-		
+
 		var err error
 		fridayStr, err = getRandomLineFromFile("./files/friday.txt")
 		if err != nil {
@@ -184,7 +184,7 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	//morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
 	if morningstr == "" {
 		log.Println("Получен пустой текст от чата")
-		
+
 		var err error
 		morningstr, err = getRandomLineFromFile("./files/morning.txt")
 		if err != nil {
@@ -309,6 +309,10 @@ func main() {
 				}
 
 				chatID := update.Message.Chat.ID
+
+				if update.Message.Location != nil {
+					sendBenzInfoForCoordinates(bot, chatID, update.Message.Location.Latitude, update.Message.Location.Longitude, defaultBenzRadiusKm)
+				}
 
 				text := strings.ToLower(update.Message.Text)
 
@@ -468,6 +472,8 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
+				case "/benz", "/benz" + usernameWithAt:
+					sendBenzInfo(bot, chatID)
 				}
 			}
 		}
@@ -482,7 +488,7 @@ func main() {
 			time.Sleep(checkInterval)
 		}
 	}()
-	
+
 	// Friday/morning loop
 	go func() {
 		for {
