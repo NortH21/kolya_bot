@@ -311,7 +311,7 @@ func main() {
 				chatID := update.Message.Chat.ID
 
 				if update.Message.Location != nil {
-					sendBenzInfoForCoordinates(bot, chatID, update.Message.Location.Latitude, update.Message.Location.Longitude, defaultBenzRadiusKm)
+					sendBenzInfoForCoordinates(bot, chatID, update.Message.Location.Latitude, update.Message.Location.Longitude, defaultBenzRadiusKm, false)
 				}
 
 				text := strings.ToLower(update.Message.Text)

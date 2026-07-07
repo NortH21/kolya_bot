@@ -203,10 +203,37 @@ func formatNearbyStationMessage(station nearbyStation) string {
 		statusEmoji = "⚠️"
 	}
 
-	return fmt.Sprintf("%s Ближайшая заправка: %s\n📍 Адрес: %s\n%s Бензин: %s\n🕒 Обновлено: %s", statusEmoji, stationName, address, statusEmoji, fuelText, lastUpdate)
+	return fmt.Sprintf("Заправка: %s\n📍 Адрес: %s\n%s Бензин: %s\n🕒 Обновлено: %s", stationName, address, statusEmoji, fuelText, lastUpdate)
 }
 
-func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon float64, radiusKm int) {
+func formatNearbyStationList(stations []nearbyStation) string {
+	if len(stations) == 0 {
+		return "Пока нет данных по ближайшим заправкам."
+	}
+
+	lines := []string{"Найдены заправки:"}
+	for i, station := range stations {
+		if i >= 5 {
+			break
+		}
+		stationName := strings.TrimSpace(station.Brand)
+		if stationName == "" {
+			stationName = strings.TrimSpace(station.Name)
+		}
+		if stationName == "" {
+			stationName = "заправка"
+		}
+		address := strings.TrimSpace(station.Addr)
+		if address == "" {
+			address = "адрес не указан"
+		}
+		fuelText := formatFuelText(station)
+		lines = append(lines, fmt.Sprintf("%d. %s — %s — %s", i+1, stationName, address, fuelText))
+	}
+	return strings.Join(lines, "\n")
+}
+
+func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon float64, radiusKm int, isListRequest bool) {
 	stations, err := fetchNearbyGasStations(lat, lon, radiusKm)
 	if err != nil {
 		log.Printf("Ошибка запроса к api nearby: %v", err)
@@ -221,11 +248,17 @@ func sendBenzInfoForCoordinates(bot *tgbotapi.BotAPI, chatID int64, lat, lon flo
 		return
 	}
 
+	if isListRequest {
+		msg := tgbotapi.NewMessage(chatID, formatNearbyStationList(stations))
+		_, _ = bot.Send(msg)
+		return
+	}
+
 	selectedStation := selectBestStation(stations)
 	msg := tgbotapi.NewMessage(chatID, formatNearbyStationMessage(selectedStation))
 	_, _ = bot.Send(msg)
 }
 
 func sendBenzInfo(bot *tgbotapi.BotAPI, chatID int64) {
-	sendBenzInfoForCoordinates(bot, chatID, defaultBenzLat, defaultBenzLon, defaultBenzRadiusKm)
+	sendBenzInfoForCoordinates(bot, chatID, defaultBenzLat, defaultBenzLon, defaultBenzRadiusKm, true)
 }
