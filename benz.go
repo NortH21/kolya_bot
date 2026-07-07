@@ -16,6 +16,8 @@ import (
 
 var benzAPIBaseURL = "https://www.gdebenz.ru/api/nearby"
 
+var reverseGeocodeAddress = lookupAddressFromCoordinates
+
 const (
 	defaultBenzLat      = 57.6
 	defaultBenzLon      = 39.8
@@ -40,6 +42,38 @@ type nearbyStation struct {
 
 type nearbyResponse struct {
 	Stations []nearbyStation `json:"stations"`
+}
+
+type geocodeResult struct {
+	DisplayName string `json:"display_name"`
+}
+
+func lookupAddressFromCoordinates(lat, lon float64) string {
+	client := &http.Client{Timeout: 5 * time.Second}
+	url := fmt.Sprintf("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=%.6f&lon=%.6f&accept-language=ru", lat, lon)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return ""
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return ""
+	}
+
+	var result geocodeResult
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return ""
+	}
+	return strings.TrimSpace(result.DisplayName)
 }
 
 func fetchNearbyGasStations(lat, lon float64, radiusKm int) ([]nearbyStation, error) {
@@ -177,6 +211,9 @@ func formatFuelText(station nearbyStation) string {
 func formatNearbyStationMessage(station nearbyStation) string {
 	address := strings.TrimSpace(station.Addr)
 	if address == "" {
+		address = reverseGeocodeAddress(station.Lat, station.Lon)
+	}
+	if address == "" {
 		address = "адрес не указан"
 	}
 
@@ -242,6 +279,9 @@ func formatNearbyStationList(stations []nearbyStation) string {
 			stationName = "заправка"
 		}
 		address := strings.TrimSpace(station.Addr)
+		if address == "" {
+			address = reverseGeocodeAddress(station.Lat, station.Lon)
+		}
 		if address == "" {
 			address = "адрес не указан"
 		}

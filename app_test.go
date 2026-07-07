@@ -159,6 +159,35 @@ func TestFormatNearbyStationMessage(t *testing.T) {
 	}
 }
 
+func TestFormatNearbyStationMessageUsesReverseGeocodeWhenAddressMissing(t *testing.T) {
+	oldLookup := reverseGeocodeAddress
+	reverseGeocodeAddress = func(lat, lon float64) string {
+		if lat == 57.620545 && lon == 39.772023 {
+			return "Москва, Красная площадь"
+		}
+		return ""
+	}
+	defer func() {
+		reverseGeocodeAddress = oldLookup
+	}()
+
+	station := nearbyStation{
+		Brand:      "Газпром",
+		Name:       "Газпром",
+		Addr:       "",
+		Lat:        57.620545,
+		Lon:        39.772023,
+		DistanceKm: 2.8,
+		FuelsNow:   "92, 95",
+		LastAt:     "2026-07-07 20:24:13",
+	}
+
+	msg := formatNearbyStationMessage(station)
+	if !strings.Contains(msg, "Москва, Красная площадь") {
+		t.Fatalf("expected reverse geocoded address to be used, got %q", msg)
+	}
+}
+
 func TestFetchNearbyGasStations(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.URL.Query().Get("lat"); got != "57.6" {
