@@ -289,7 +289,7 @@ func formatNearbyStationList(stations []nearbyStation) string {
 		return "Рядом нет заправок с бензином."
 	}
 
-	lines := []string{"Найдены заправки:"}
+	lines := []string{"Заправки где есть бензин:"}
 	for i, station := range filtered {
 		if i >= 5 {
 			break
@@ -310,7 +310,7 @@ func formatNearbyStationList(stations []nearbyStation) string {
 		}
 		fuelText := formatFuelText(station)
 		if strings.Contains(strings.ToLower(fuelText), "очеред") || strings.Contains(strings.ToLower(fuelText), "queue") {
-			fuelText = fmt.Sprintf("%s (в очереди)", fuelText)
+			fuelText = fmt.Sprintf("%s в очереди", fuelText)
 		}
 		lines = append(lines, fmt.Sprintf("%d. %s — %s — %s", i+1, stationName, address, fuelText))
 	}
