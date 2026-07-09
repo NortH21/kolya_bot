@@ -188,6 +188,22 @@ func TestFormatNearbyStationMessageUsesReverseGeocodeWhenAddressMissing(t *testi
 	}
 }
 
+func TestFormatNearbyStationListReturnsNoFuelMessage(t *testing.T) {
+	stations := []nearbyStation{
+		{
+			Brand:  "Роснефть",
+			Addr:   "ул. Промзона, 11",
+			Status: "no",
+			Detail: "Заправка не работает",
+		},
+	}
+
+	msg := formatNearbyStationList(stations)
+	if msg != "Рядом нет заправок с бензином." {
+		t.Fatalf("expected no-fuel message, got %q", msg)
+	}
+}
+
 func TestFetchNearbyGasStations(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.URL.Query().Get("lat"); got != "57.6" {

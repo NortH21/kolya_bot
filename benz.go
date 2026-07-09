@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -19,9 +20,9 @@ var benzAPIBaseURL = "https://www.gdebenz.ru/api/nearby"
 var reverseGeocodeAddress = lookupAddressFromCoordinates
 
 const (
-	defaultBenzLat      = 57.6
-	defaultBenzLon      = 39.8
-	defaultBenzRadiusKm = 5
+	defaultBenzLat      = 57.62
+	defaultBenzLon      = 39.88
+	defaultBenzRadiusKm = 20
 )
 
 type nearbyStation struct {
@@ -115,8 +116,22 @@ func fetchNearbyGasStations(lat, lon float64, radiusKm int) ([]nearbyStation, er
 
 		if resp.StatusCode == http.StatusOK {
 			defer resp.Body.Close()
+			bodyBytes, err := io.ReadAll(resp.Body)
+			if err != nil {
+				if attempt < 3 {
+					time.Sleep(500 * time.Millisecond)
+					continue
+				}
+				return nil, err
+			}
+			logBody := strings.TrimSpace(string(bodyBytes))
+			if len(logBody) > 2000 {
+				logBody = logBody[:2000] + "... (truncated)"
+			}
+			log.Printf("gdebenz api response: %s", logBody)
+
 			var payload nearbyResponse
-			if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+			if err := json.Unmarshal(bodyBytes, &payload); err != nil {
 				if attempt < 3 {
 					time.Sleep(500 * time.Millisecond)
 					continue
@@ -127,6 +142,12 @@ func fetchNearbyGasStations(lat, lon float64, radiusKm int) ([]nearbyStation, er
 		}
 
 		defer resp.Body.Close()
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		logBody := strings.TrimSpace(string(bodyBytes))
+		if len(logBody) > 2000 {
+			logBody = logBody[:2000] + "... (truncated)"
+		}
+		log.Printf("gdebenz api error status %d response: %s", resp.StatusCode, logBody)
 		lastErr = fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 		if attempt < 3 {
 			time.Sleep(500 * time.Millisecond)
@@ -199,11 +220,14 @@ func formatFuelText(station nearbyStation) string {
 		return "в очереди"
 	}
 	if status == "no" {
+		if detail := strings.TrimSpace(station.Detail); detail != "" {
+			return detail
+		}
 		return "нет данных"
 	}
 
-	if strings.TrimSpace(station.Detail) != "" {
-		return station.Detail
+	if detail := strings.TrimSpace(station.Detail); detail != "" {
+		return detail
 	}
 	return "нет данных"
 }
@@ -250,9 +274,8 @@ func filterStationsForList(stations []nearbyStation) []nearbyStation {
 
 	for _, station := range stations {
 		fuelText := strings.TrimSpace(station.FuelsNow)
-		detailText := strings.TrimSpace(station.Detail)
 		status := strings.ToLower(strings.TrimSpace(station.Status))
-		if fuelText != "" || detailText != "" || status == "yes" || status == "queue" {
+		if fuelText != "" || status == "yes" || status == "queue" {
 			filtered = append(filtered, station)
 		}
 	}
@@ -263,7 +286,7 @@ func filterStationsForList(stations []nearbyStation) []nearbyStation {
 func formatNearbyStationList(stations []nearbyStation) string {
 	filtered := filterStationsForList(stations)
 	if len(filtered) == 0 {
-		return "Пока нет данных по ближайшим заправкам."
+		return "Рядом нет заправок с бензином."
 	}
 
 	lines := []string{"Найдены заправки:"}
