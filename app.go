@@ -230,6 +230,8 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 		log.Println(err)
 	}
 
+	sendBenzInfoForCoordinates(bot, reminderChatID, defaultBenzLat, defaultBenzLon, defaultBenzRadiusKm, true)
+
 	gga, err := getGreatAdvice("random")
 	if err != nil {
 		fmt.Println(err)
