@@ -10,4 +10,9 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - kolya-bot-tmp:/tmp
+
+volumes:
+  kolya-bot-tmp:
 
