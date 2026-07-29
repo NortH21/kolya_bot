@@ -27,6 +27,8 @@ var (
 	// reminderChatID	int64 = 140450662
 	// testId			int64 = -1001194083056
 	meetUrl = "https://meet.sipleg.ru/spd"
+
+	featureFlagsAdminID int64 = 140450662
 )
 
 var replyCountMap = make(map[int64]int)
@@ -180,75 +182,82 @@ func shouldSendMorningGreetings(currentTime time.Time) bool {
 }
 
 func sendMorningGreetings(bot *tgbotapi.BotAPI) {
-	morningstr := ""
-	//morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
-	if morningstr == "" {
-		log.Println("Получен пустой текст от чата")
+	if isFeatureEnabled(FlagMorning) {
+		morningstr := ""
+		//morningstr := Chat("поздравь коллег с началом рабочего дня и добавь смайлики, без особого формализма. сделай 10 случайных вариантов и выбери только один из них, самый лучший пришли мне(только сам текст), надо чтобы каждый день было разное сообщение.")
+		if morningstr == "" {
+			log.Println("Получен пустой текст от чата")
 
-		var err error
-		morningstr, err = getRandomLineFromFile("./files/morning.txt")
-		if err != nil {
-			log.Println("Ошибка при получении строки из файла:", err)
-			return
+			var err error
+			morningstr, err = getRandomLineFromFile("./files/morning.txt")
+			if err != nil {
+				log.Println("Ошибка при получении строки из файла:", err)
+			}
+		}
+
+		if morningstr != "" {
+			morning := tgbotapi.NewMessage(reminderChatID, morningstr)
+			if _, err := bot.Send(morning); err != nil {
+				log.Println("Ошибка при отправке сообщения:", err)
+			}
 		}
 	}
 
-	morning := tgbotapi.NewMessage(reminderChatID, morningstr)
-	if _, err := bot.Send(morning); err != nil {
-		log.Println("Ошибка при отправке сообщения:", err)
+	if isFeatureEnabled(FlagForecast) {
+		fullForecast, err := Forecast()
+		if err != nil {
+			log.Println(err)
+		} else {
+			forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
+			if _, err := bot.Send(forecast); err != nil {
+				log.Println(err)
+			}
+		}
 	}
 
-	fullForecast, err := Forecast()
-	if err != nil {
-		log.Println(err)
+	if isFeatureEnabled(FlagRates) {
+		rateUSD, err := getExchangeRates("USD")
+		if err != nil {
+			log.Println(err)
+		} else {
+			rateAZN, err := getExchangeRates("AZN")
+			if err != nil {
+				log.Println(err)
+			} else {
+				ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
+				ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
+				ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+
+				rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
+				if _, err := bot.Send(rates); err != nil {
+					log.Println("Ошибка при отправке сообщения:", err)
+				}
+			}
+		}
 	}
 
-	rateUSD, err := getExchangeRates("USD")
-	if err != nil {
-		log.Println(err)
-		return
+	if isFeatureEnabled(FlagBenz) {
+		sendBenzInfoForCoordinates(bot, reminderChatID, defaultBenzLat, defaultBenzLon, defaultBenzRadiusKm, true)
 	}
 
-	rateAZN, err := getExchangeRates("AZN")
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	if isFeatureEnabled(FlagAdvice) {
+		gga, err := getGreatAdvice("random")
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			var messageText string
 
-	ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
-	ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-	ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+			if gga == "" {
+				messageText = "Совета дня сегодня не будет, посоны. Как нибудь сами разберётесь."
+			} else {
+				messageText = "Котик, " + strings.ToLower(gga)
+			}
 
-	rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
-	if _, err := bot.Send(rates); err != nil {
-		log.Println("Ошибка при отправке сообщения:", err)
-	}
-
-	forecast := tgbotapi.NewMessage(reminderChatID, fullForecast)
-	_, err = bot.Send(forecast)
-	if err != nil {
-		log.Println(err)
-	}
-
-	sendBenzInfoForCoordinates(bot, reminderChatID, defaultBenzLat, defaultBenzLon, defaultBenzRadiusKm, true)
-
-	gga, err := getGreatAdvice("random")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var messageText string
-
-	if gga == "" {
-		messageText = "Совета дня сегодня не будет, посоны. Как нибудь сами разберётесь."
-	} else {
-		messageText = "Котик, " + strings.ToLower(gga)
-	}
-
-	ggam := tgbotapi.NewMessage(reminderChatID, messageText)
-	if _, err := bot.Send(ggam); err != nil {
-		log.Println("Ошибка при отправке сообщения:", err)
+			ggam := tgbotapi.NewMessage(reminderChatID, messageText)
+			if _, err := bot.Send(ggam); err != nil {
+				log.Println("Ошибка при отправке сообщения:", err)
+			}
+		}
 	}
 }
 
@@ -277,6 +286,8 @@ func main() {
 	lastReplyTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap = make(map[int64]time.Time)
 	lastReminderTimeMap[reminderChatID] = time.Now()
+
+	loadFeatureFlags()
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
@@ -366,6 +377,34 @@ func main() {
 				}
 
 				usernameWithAt := strings.ToLower("@" + bot.Self.UserName)
+
+				isFeatureFlagsAdmin := update.Message.From != nil && update.Message.From.ID == featureFlagsAdminID
+
+				if strings.HasPrefix(text, "/flag_on") || strings.HasPrefix(text, "/flag_off") {
+					fields := strings.Fields(text)
+					if len(fields) == 2 && isFeatureFlagsAdmin {
+						cmd := strings.TrimSuffix(fields[0], usernameWithAt)
+						flagName := fields[1]
+
+						var reply tgbotapi.MessageConfig
+						flag, ok := parseFeatureFlag(flagName)
+						if !ok {
+							reply = tgbotapi.NewMessage(chatID, "Неизвестный флаг: "+flagName+"\n\n"+featureFlagsStatusText())
+						} else {
+							enabled := cmd == "/flag_on"
+							setFeatureEnabled(flag, enabled)
+							state := "выключен ❌"
+							if enabled {
+								state = "включен ✅"
+							}
+							reply = tgbotapi.NewMessage(chatID, "Флаг "+flagName+" "+state)
+						}
+
+						if _, err := bot.Send(reply); err != nil {
+							log.Println(err)
+						}
+					}
+				}
 
 				rand.Seed(time.Now().UnixNano())
 				switch text {
@@ -476,6 +515,13 @@ func main() {
 					}
 				case "/benz", "/benz" + usernameWithAt:
 					sendBenzInfo(bot, chatID)
+				case "/flags", "/flags" + usernameWithAt:
+					if isFeatureFlagsAdmin {
+						reply := tgbotapi.NewMessage(chatID, featureFlagsStatusText())
+						if _, err := bot.Send(reply); err != nil {
+							log.Println(err)
+						}
+					}
 				}
 			}
 		}
