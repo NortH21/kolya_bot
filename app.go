@@ -224,13 +224,19 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 			if err != nil {
 				log.Println(err)
 			} else {
-				ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
-				ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-				ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+				rateEUR, err := getExchangeRates("EUR")
+				if err != nil {
+					log.Println(err)
+				} else {
+					ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
+					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
+					ratesEURstr := fmt.Sprintf("Курс EUR к рублю: %.2f.", rateEUR)
+					ratesstr := fmt.Sprintf("%s \n%s \n%s", ratesUSDstr, ratesAZNstr, ratesEURstr)
 
-				rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
-				if _, err := bot.Send(rates); err != nil {
-					log.Println("Ошибка при отправке сообщения:", err)
+					rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
+					if _, err := bot.Send(rates); err != nil {
+						log.Println("Ошибка при отправке сообщения:", err)
+					}
 				}
 			}
 		}
@@ -493,9 +499,16 @@ func main() {
 						return
 					}
 
+					rateEUR, err := getExchangeRates("EUR")
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+
 					ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
 					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-					ratesstr := fmt.Sprintf("%s \n%s", ratesUSDstr, ratesAZNstr)
+					ratesEURstr := fmt.Sprintf("Курс EUR к рублю: %.2f.", rateEUR)
+					ratesstr := fmt.Sprintf("%s \n%s \n%s", ratesUSDstr, ratesAZNstr, ratesEURstr)
 					reply := tgbotapi.NewMessage(chatID, ratesstr)
 					_, err = bot.Send(reply)
 					if err != nil {
