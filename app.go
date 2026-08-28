@@ -216,28 +216,11 @@ func sendMorningGreetings(bot *tgbotapi.BotAPI) {
 	}
 
 	if isFeatureEnabled(FlagRates) {
-		rateUSD, err := getExchangeRates("USD")
-		if err != nil {
-			log.Println(err)
-		} else {
-			rateAZN, err := getExchangeRates("AZN")
-			if err != nil {
-				log.Println(err)
-			} else {
-				rateEUR, err := getExchangeRates("EUR")
-				if err != nil {
-					log.Println(err)
-				} else {
-					ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
-					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-					ratesEURstr := fmt.Sprintf("Курс EUR к рублю: %.2f.", rateEUR)
-					ratesstr := fmt.Sprintf("%s \n%s \n%s", ratesUSDstr, ratesAZNstr, ratesEURstr)
-
-					rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
-					if _, err := bot.Send(rates); err != nil {
-						log.Println("Ошибка при отправке сообщения:", err)
-					}
-				}
+		ratesstr := buildRatesMessage()
+		if ratesstr != "" {
+			rates := tgbotapi.NewMessage(reminderChatID, ratesstr)
+			if _, err := bot.Send(rates); err != nil {
+				log.Println("Ошибка при отправке сообщения:", err)
 			}
 		}
 	}
@@ -487,32 +470,12 @@ func main() {
 						log.Println(err)
 					}
 				case "/rates", "/rates" + usernameWithAt:
-					rateUSD, err := getExchangeRates("USD")
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
-
-					rateAZN, err := getExchangeRates("AZN")
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
-
-					rateEUR, err := getExchangeRates("EUR")
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
-
-					ratesUSDstr := fmt.Sprintf("Курс USD к рублю: %.2f.", rateUSD)
-					ratesAZNstr := fmt.Sprintf("Курс AZN к рублю: %.2f.", rateAZN)
-					ratesEURstr := fmt.Sprintf("Курс EUR к рублю: %.2f.", rateEUR)
-					ratesstr := fmt.Sprintf("%s \n%s \n%s", ratesUSDstr, ratesAZNstr, ratesEURstr)
-					reply := tgbotapi.NewMessage(chatID, ratesstr)
-					_, err = bot.Send(reply)
-					if err != nil {
-						log.Println(err)
+					ratesstr := buildRatesMessage()
+					if ratesstr != "" {
+						reply := tgbotapi.NewMessage(chatID, ratesstr)
+						if _, err := bot.Send(reply); err != nil {
+							log.Println(err)
+						}
 					}
 				case "/fucking_great_advice", "/fucking_great_advice" + usernameWithAt:
 					fuckingGreatAdvice, err := getGreatAdvice("random")
